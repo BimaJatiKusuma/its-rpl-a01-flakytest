@@ -1,0 +1,22 @@
+\begin{table}
+\caption{Statistical Rankings and Friedman Test (24 LOOCV)}
+\label{tab:stat_ranks}
+\begin{tabular}{lllcccc}
+\toprule
+Task & Metric & Algorithm & Average_Rank & Friedman_Stat & Friedman_p_val & Nemenyi_CD \\
+\midrule
+Classification & MCC & Gradient Boosting & 2.541667 & 10.432258 & 0.063874 & 1.539176 \\
+Classification & MCC & Naive Bayes & 3.333333 & 10.432258 & 0.063874 & 1.539176 \\
+Classification & MCC & Logistic Regression & 3.479167 & 10.432258 & 0.063874 & 1.539176 \\
+Classification & MCC & KNN & 3.770833 & 10.432258 & 0.063874 & 1.539176 \\
+Classification & MCC & Extra Trees & 3.916667 & 10.432258 & 0.063874 & 1.539176 \\
+Classification & MCC & Random Forest & 3.958333 & 10.432258 & 0.063874 & 1.539176 \\
+Regression & Spearman_Rho & Extra Trees Regressor & 2.520833 & 21.807453 & 0.000570 & 1.539176 \\
+Regression & Spearman_Rho & SVR & 2.937500 & 21.807453 & 0.000570 & 1.539176 \\
+Regression & Spearman_Rho & Random Forest Regressor & 3.020833 & 21.807453 & 0.000570 & 1.539176 \\
+Regression & Spearman_Rho & Ridge & 3.979167 & 21.807453 & 0.000570 & 1.539176 \\
+Regression & Spearman_Rho & Gradient Boosting Regressor & 4.020833 & 21.807453 & 0.000570 & 1.539176 \\
+Regression & Spearman_Rho & Lasso & 4.520833 & 21.807453 & 0.000570 & 1.539176 \\
+\bottomrule
+\end{tabular}
+\end{table}
