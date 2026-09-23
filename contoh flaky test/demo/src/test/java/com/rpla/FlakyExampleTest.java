@@ -11,8 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FlakyExampleTest {
     private int counter = 0;
 
-    // Ini akan terus berjalan hingga mencapai 100 kali atau sampai ditemukan
-    // kegagalan.
     @RepeatedTest(100)
     void testAsyncOperationTimeout() throws InterruptedException {
         // Reset counter untuk setiap perulangan
@@ -22,8 +20,7 @@ class FlakyExampleTest {
         // Mensimulasikan proses asinkron (misal: background job, request API, webhook)
         Thread backgroundTask = new Thread(() -> {
             try {
-                // Waktu proses bervariasi, mensimulasikan latensi jaringan atau beban server.
-                // Kita ubah rentang waktunya hingga 150 milidetik.
+                // simulasi latensi jaringan atau beban server.
                 Thread.sleep((long) (Math.random() * 105));
                 counter = 1;
             } catch (InterruptedException e) {
@@ -34,10 +31,8 @@ class FlakyExampleTest {
         });
 
         backgroundTask.start();
-
         // Menunggu sampai task selesai.
         boolean finished = completed.await(100, TimeUnit.MILLISECONDS);
-
         assertTrue(finished, "Background task tidak selesai dalam batas waktu (Flaky Test Terjadi!)");
         assertEquals(1, counter, "Counter seharusnya sudah diupdate menjadi 1");
     }
