@@ -1,0 +1,401 @@
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import NearestNeighbors
+from sklearn.metrics import f1_score, matthews_corrcoef, precision_score, recall_score, roc_auc_score
+from sklearn.model_selection import StratifiedKFold
+from imblearn.over_sampling import SMOTE
+import warnings
+import time
+
+warnings.filterwarnings('ignore')
+sns.set_theme(style="whitegrid")
+
+from sklearn.impute import SimpleImputer
+
+---CELL---
+
+# Load Dataset
+print("Loading datasets...")
+df_features = pd.read_csv('../../test_features.csv') 
+df_results = pd.read_csv('../../test_results.csv')
+df_proj = pd.read_csv('../../Project_Info.csv')
+
+# Build mapping from Project_Info
+owner_repo_to_proj = {}
+for idx, row in df_proj.iterrows():
+    url = row["URL"].strip()
+    owner_repo = url.replace("https://github.com/", "").strip()
+    owner, repo = owner_repo.split("/")
+    repo_clean = repo.lower()
+    owner_repo_to_proj[f"{owner.lower()}-{repo.lower()}"] = repo_clean
+    owner_repo_to_proj[repo_clean] = repo_clean
+
+# Preprocess features
+df_features["project_clean"] = df_features["project"].str.lower()
+
+# Preprocess results
+df_results["project_clean"] = df_results["Project"].apply(
+    lambda x: owner_repo_to_proj.get(x.lower(), x.lower())
+)
+df_results["testMethodName"] = df_results["Test"].apply(lambda x: x.split("#")[1] if "#" in x else x)
+df_results["testClassName"] = df_results["Test"].apply(lambda x: x.split("#")[0] if "#" in x else "")
+
+# Merging (handle commons-exec differently based on known benchmark properties)
+ce_res = df_results[df_results["project_clean"] == "commons-exec"]
+ce_feat = df_features[df_features["project_clean"] == "commons-exec"]
+merged_ce = pd.merge(
+    ce_feat,
+    ce_res[["project_clean", "testMethodName", "NumFailingRuns"]],
+    on=["project_clean", "testMethodName"],
+    how="inner"
+)
+
+other_res = df_results[df_results["project_clean"] != "commons-exec"]
+other_feat = df_features[df_features["project_clean"] != "commons-exec"]
+merged_other = pd.merge(
+    other_feat,
+    other_res[["project_clean", "testClassName", "testMethodName", "NumFailingRuns"]],
+    on=["project_clean", "testClassName", "testMethodName"],
+    how="inner"
+)
+
+df = pd.concat([merged_other, merged_ce], ignore_index=True)
+print(f"Successfully aligned {len(df)} test cases.")
+
+# Prepare Target
+df['flaky'] = df['flaky'].astype(int) # 'flaky' is already in df_features
+
+# Extract Features
+metadata_cols = {
+    "Unnamed: 0", "test_name", "project", "project_clean",
+    "testClassName", "testMethodName", "flaky", "NumFailingRuns", "Project", "Test", "IsFlaky"
+}
+feature_cols = [c for c in df_features.columns if c not in metadata_cols]
+
+print(f"Total instances: {len(df)}")
+print(f"Total features: {len(feature_cols)}")
+
+---CELL---
+
+
+from sklearn.base import clone
+from sklearn.tree import DecisionTreeClassifier
+
+class TrAdaBoostClassifier:
+    def __init__(self, base_estimator=DecisionTreeClassifier(max_depth=3), n_estimators=10):
+        self.base_estimator = base_estimator
+        self.n_estimators = n_estimators
+        self.estimators_ = []
+        self.beta_all = []
+        
+    def fit(self, X_source, y_source, X_target, y_target):
+        # Implementation of TrAdaBoost
+        # X_source: Data latih dari proyek sumber
+        # X_target: Data latih sedikit dari proyek target (atau data proksi target)
+        
+        # Note: In strict Cross-Project zero-shot, we might not have y_target for training. 
+        # Standard TrAdaBoost requires some labeled target data. 
+        # For the sake of this replication (unsupervised target adaptation), we can use a proxy
+        # or simplified instance weighting scheme based on marginal distribution, 
+        # but here is a standard skeleton that would be adapted.
+        
+        X = np.vstack((X_source, X_target))
+        y = np.hstack((y_source, y_target))
+        
+        n_source = X_source.shape[0]
+        n_target = X_target.shape[0]
+        n = n_source + n_target
+        
+        weights = np.ones(n) / n
+        
+        beta = 1.0 / (1.0 + np.sqrt(2 * np.log(n_source / self.n_estimators)))
+        
+        for i in range(self.n_estimators):
+            weights = weights / np.sum(weights)
+            estimator = clone(self.base_estimator)
+            estimator.fit(X, y, sample_weight=weights)
+            self.estimators_.append(estimator)
+            
+            # Predict
+            pred = estimator.predict(X)
+            error_target = np.sum(weights[n_source:] * (pred[n_source:] != y[n_source:]))
+            if error_target > 0.5:
+                error_target = 0.5
+            if error_target == 0:
+                beta_target = 1.0
+            else:
+                beta_target = error_target / (1.0 - error_target)
+                
+            self.beta_all.append(beta_target)
+            
+            # Update weights
+            for j in range(n_source):
+                if pred[j] != y[j]:
+                    weights[j] = weights[j] * beta
+            for j in range(n_target):
+                if pred[n_source + j] != y[n_source + j]:
+                    weights[n_source + j] = weights[n_source + j] * (1.0 / beta_target)
+                    
+        return self
+        
+    def predict(self, X):
+        preds = np.zeros((X.shape[0], len(self.estimators_)))
+        for i, estimator in enumerate(self.estimators_):
+            preds[:, i] = estimator.predict(X)
+            
+        final_preds = []
+        for i in range(X.shape[0]):
+            weight_0 = 0
+            weight_1 = 0
+            for j in range(self.n_estimators):
+                if preds[i, j] == 0:
+                    weight_0 += np.log(1.0 / (self.beta_all[j] + 1e-10))
+                else:
+                    weight_1 += np.log(1.0 / (self.beta_all[j] + 1e-10))
+            final_preds.append(1 if weight_1 > weight_0 else 0)
+        return np.array(final_preds)
+
+# Warning: Zero-shot Cross-Project means NO labeled target data. 
+# We'll use a modified approach in the experiment loop (e.g. applying TrAdaBoost utilizing pseudo-labels 
+# or standard RF if strict zero-shot is enforced by Afeltra et al).
+
+
+---CELL---
+
+
+projects = df['project_clean'].unique()
+print(f"Total projects for LOOCV: {len(projects)}")
+
+results = []
+feature_importances_rf = []
+
+for p_test_name in projects:
+    print(f"\n--- Target Project: {p_test_name} ---")
+    
+    # Split Data
+    proj_col = 'project_clean'
+    df_train = df[df[proj_col] != p_test_name]
+    df_test = df[df[proj_col] == p_test_name]
+    
+    X_train_raw = df_train[feature_cols].values
+    y_train = df_train['flaky'].values
+    X_test_raw = df_test[feature_cols].values
+    y_test = df_test['flaky'].values
+    
+    # 4. Strict Data Leakage Prevention (Imputing and Scaling)
+    imputer = SimpleImputer(strategy='median')
+    X_train_imputed = imputer.fit_transform(X_train_raw)
+    X_test_imputed = imputer.transform(X_test_raw)
+    
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train_imputed)
+    X_test_scaled = scaler.transform(X_test_imputed)
+    
+    # Address Class Imbalance with SMOTE on Training set only
+    smote = SMOTE(random_state=42)
+    try:
+        X_train_resampled, y_train_resampled = smote.fit_resample(X_train_scaled, y_train)
+    except Exception as e:
+        # Fallback if SMOTE fails (e.g., extremely few samples)
+        X_train_resampled, y_train_resampled = X_train_scaled, y_train
+        print("SMOTE failed, using original training data.")
+        
+    # --- 1. Baseline Cross-Project Model ---
+    rf_baseline = RandomForestClassifier(n_estimators=100, random_state=42, class_weight='balanced')
+    rf_baseline.fit(X_train_resampled, y_train_resampled)
+    y_pred_base = rf_baseline.predict(X_test_scaled)
+    
+    # Feature importance for later
+    feature_importances_rf.append(rf_baseline.feature_importances_)
+    
+    # --- 2. Burak Filter (Instance Selection) ---
+    # Select Top-K nearest neighbors from Source for each Target instance
+    # To save memory and computation, we take the mean of target instances or subsample.
+    K = min(1000, len(X_train_scaled))
+    knn = NearestNeighbors(n_neighbors=K)
+    knn.fit(X_train_scaled)
+    # Find neighbors for all test instances
+    distances, indices = knn.kneighbors(X_test_scaled)
+    
+    # Unique indices of source instances closest to target
+    unique_burak_indices = np.unique(indices.flatten())
+    X_train_burak = X_train_scaled[unique_burak_indices]
+    y_train_burak = y_train[unique_burak_indices]
+    
+    # Resample Burak filtered data
+    try:
+        X_train_burak_res, y_train_burak_res = smote.fit_resample(X_train_burak, y_train_burak)
+    except:
+        X_train_burak_res, y_train_burak_res = X_train_burak, y_train_burak
+        
+    rf_burak = RandomForestClassifier(n_estimators=100, random_state=42, class_weight='balanced')
+    if len(np.unique(y_train_burak_res)) > 1:
+        rf_burak.fit(X_train_burak_res, y_train_burak_res)
+        y_pred_burak = rf_burak.predict(X_test_scaled)
+    else:
+        y_pred_burak = np.zeros_like(y_test) # Fallback
+        
+    # --- 3. TrAdaBoost (Proxy / Simplified for zero-shot) ---
+    # Since we can't use y_test, standard TrAdaBoost needs a small validation set from target.
+    # We will simulate a scenario where 10% of target data is available for transfer adaptation
+    # to demonstrate the algorithm.
+    split_idx = int(len(X_test_scaled) * 0.1)
+    if split_idx > 0 and len(np.unique(y_test[:split_idx])) > 1:
+        X_target_train = X_test_scaled[:split_idx]
+        y_target_train = y_test[:split_idx]
+        X_target_test = X_test_scaled[split_idx:]
+        y_target_test = y_test[split_idx:]
+        
+        trada = TrAdaBoostClassifier(base_estimator=DecisionTreeClassifier(max_depth=5), n_estimators=20)
+        # using a subset of source to speed up
+        sub_idx = np.random.choice(len(X_train_scaled), min(5000, len(X_train_scaled)), replace=False)
+        trada.fit(X_train_scaled[sub_idx], y_train[sub_idx], X_target_train, y_target_train)
+        y_pred_trada = trada.predict(X_target_test)
+        
+        # Evaluate on the remaining 90%
+        y_test_eval_trada = y_target_test
+    else:
+        # Fallback if target project has too few samples
+        y_pred_trada = y_pred_base
+        y_test_eval_trada = y_test
+
+    # --- 4. Within-Project Upper Bound ---
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42) # 5-fold instead of 10 for speed
+    y_pred_within = np.zeros_like(y_test)
+    
+    if len(np.unique(y_test)) > 1 and len(y_test) >= 5:
+        for train_idx, test_idx in skf.split(X_test_raw, y_test):
+            X_tr_w, X_te_w = X_test_raw[train_idx], X_test_raw[test_idx]
+            y_tr_w, y_te_w = y_test[train_idx], y_test[test_idx]
+            
+            imp_w = SimpleImputer(strategy='median')
+            X_tr_w_imp = imp_w.fit_transform(X_tr_w)
+            X_te_w_imp = imp_w.transform(X_te_w)
+            
+            sc_w = StandardScaler()
+            X_tr_w_sc = sc_w.fit_transform(X_tr_w_imp)
+            X_te_w_sc = sc_w.transform(X_te_w_imp)
+            
+            rf_w = RandomForestClassifier(n_estimators=100, random_state=42, class_weight='balanced')
+            rf_w.fit(X_tr_w_sc, y_tr_w)
+            y_pred_within[test_idx] = rf_w.predict(X_te_w_sc)
+    else:
+        # Fallback
+        y_pred_within = np.zeros_like(y_test)
+
+
+    # Calculate Metrics Function
+    def get_metrics(y_true, y_pred):
+        if len(np.unique(y_true)) == 1:
+            return 0.0, 0.0, 0.0, 0.0, 0.0
+        return (
+            f1_score(y_true, y_pred, zero_division=0),
+            matthews_corrcoef(y_true, y_pred),
+            precision_score(y_true, y_pred, zero_division=0),
+            recall_score(y_true, y_pred, zero_division=0),
+            roc_auc_score(y_true, y_pred) if len(np.unique(y_pred)) > 1 else 0.5
+        )
+        
+    metrics_base = get_metrics(y_test, y_pred_base)
+    metrics_burak = get_metrics(y_test, y_pred_burak)
+    metrics_trada = get_metrics(y_test_eval_trada, y_pred_trada)
+    metrics_within = get_metrics(y_test, y_pred_within)
+    
+    # Store results
+    models = ['Baseline', 'Burak Filter', 'TrAdaBoost', 'Within-Project']
+    mets_list = [metrics_base, metrics_burak, metrics_trada, metrics_within]
+    
+    for mod, mets in zip(models, mets_list):
+        results.append({
+            'Project': p_test_name,
+            'Model': mod,
+            'F1-Score': mets[0],
+            'MCC': mets[1],
+            'Precision': mets[2],
+            'Recall': mets[3],
+            'AUC-ROC': mets[4]
+        })
+
+df_results_all = pd.DataFrame(results)
+print("LOOCV Evaluation Complete.")
+
+
+---CELL---
+
+
+# Aggregate Metrics: Mean +/- Std
+summary_df = df_results_all.groupby('Model').agg({
+    'F1-Score': ['mean', 'std'],
+    'MCC': ['mean', 'std'],
+    'Precision': ['mean', 'std'],
+    'Recall': ['mean', 'std'],
+    'AUC-ROC': ['mean', 'std']
+}).round(3)
+
+print("=== Ringkasan Hasil Eksperimen ===")
+display(summary_df)
+
+# Plot 1: Boxplot F1-Score and MCC
+fig, axes = plt.subplots(1, 2, figsize=(14, 6), dpi=300)
+sns.boxplot(data=df_results_all, x='Model', y='F1-Score', ax=axes[0], palette='viridis')
+axes[0].set_title('Perbandingan F1-Score Antar Model (Cross-Project)')
+axes[0].set_xticklabels(axes[0].get_xticklabels(), rotation=15)
+
+sns.boxplot(data=df_results_all, x='Model', y='MCC', ax=axes[1], palette='viridis')
+axes[1].set_title('Perbandingan MCC Antar Model (Cross-Project)')
+axes[1].set_xticklabels(axes[1].get_xticklabels(), rotation=15)
+
+plt.tight_layout()
+plt.savefig('boxplot_metrics.png')
+plt.show()
+
+# Plot 2: Project-by-Project Heatmap (F1-Score)
+pivot_f1 = df_results_all.pivot(index='Project', columns='Model', values='F1-Score')
+plt.figure(figsize=(10, 8), dpi=300)
+sns.heatmap(pivot_f1, annot=True, cmap='YlGnBu', fmt=".2f", linewidths=.5)
+plt.title('Heatmap F1-Score per Proyek vs Intervensi Model')
+plt.ylabel('Target Project (P_test)')
+plt.xlabel('Model Intervention')
+plt.tight_layout()
+plt.savefig('heatmap_f1.png')
+plt.show()
+
+# Plot 3: Feature Importance Bar Plot (Top 15 dari Baseline Random Forest)
+avg_importances = np.mean(feature_importances_rf, axis=0)
+indices = np.argsort(avg_importances)[::-1][:15]
+
+plt.figure(figsize=(12, 6), dpi=300)
+sns.barplot(x=avg_importances[indices], y=np.array(feature_cols)[indices], palette='magma')
+plt.title('Top 15 Feature Importances (Random Forest Cross-Project)')
+plt.xlabel('Mean Gini Importance')
+plt.ylabel('Feature')
+plt.tight_layout()
+plt.savefig('feature_importance.png')
+plt.show()
+
+
+---CELL---
+
+
+# Export Summary to LaTeX
+latex_str = summary_df.to_latex(
+    caption="Perbandingan Model Cross-Project Flaky Test Prediction (Afeltra et al., 2024)",
+    label="tab:cross_project_results",
+    float_format="%.3f"
+)
+
+with open('summary_results_latex.tex', 'w') as f:
+    f.write(latex_str)
+
+print("Tabel LaTeX berhasil di-export ke 'summary_results_latex.tex'.")
+print("\nPreview LaTeX:")
+print(latex_str)
+
+# Menyimpan Dataframe detail ke CSV
+df_results_all.to_csv('detailed_cross_project_results.csv', index=False)
+print("Data frame lengkap berhasil disimpan ke 'detailed_cross_project_results.csv'.")
