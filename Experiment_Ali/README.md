@@ -68,7 +68,7 @@ Penelitian ini dijalankan secara bertahap mengikuti 5 fase utama:
 ```mermaid
 flowchart LR
     P1["Phase 1: Data Cleaning & EDA"] --> P2["Phase 2: Feature Engineering"]
-    P2 --> P3["Phase 3: LOPO-CV Setup"]
+    P2 --> P3["Phase 3: LOOCV Setup"]
     P3 --> P4["Phase 4: Model Training"]
     P4 --> P5["Phase 5: Cross-Project Evaluation"]
 ```
@@ -82,8 +82,8 @@ flowchart LR
    - Log transformation ($\log(x+1)$) untuk fitur berdistribusi skewed.
    - Normalisasi `StandardScaler` dan `RobustScaler` untuk mitigasi *domain shift*.
    - Kompresi PCA pada 8 window `hIndex` untuk eliminasi multikolinearitas.
-3. ⏳ **Phase 3: Validation Strategy Setup (Leave-One-Project-Out / LOPO-CV)** *(Berikutnya)*
-   - Menyusun skema LOPO CV (24-fold): Latih pada 23 proyek, uji pada 1 proyek unseen.
+3. ⏳ **Phase 3: Validation Strategy Setup (Leave-One-Project-Out / LOOCV)** *(Berikutnya)*
+   - Menyusun skema LOOCV (24-fold): Latih pada 23 proyek, uji pada 1 proyek unseen.
 4. ⏳ **Phase 4: Model Training & Handling Class Imbalance**
    - Pemodelan dengan XGBoost, LightGBM, Random Forest, dan CatBoost.
    - Penanganan class imbalance via `scale_pos_weight`, `class_weight='balanced'`, dan threshold tuning.

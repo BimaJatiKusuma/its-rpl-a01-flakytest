@@ -22,7 +22,7 @@ Rencana Anda adalah menghapus seluruh fitur identitas proyek dan test (`project`
 > **Keputusan Sangat Tepat**: Menghapus fitur identifikasi adalah **syarat mutlak** dalam riset *cross-project defect/flaky prediction* untuk menghindari *data leakage* dan mencegah model mengalami *memorization* (hanya menghafal nama kelas/proyek tertentu).
 
 1. **True Generalizability**: Dengan hanya melatih model pada fitur perilaku/karakteristik teknis, model dipaksa mempelajari pola universal mengapa suatu test menjadi flaky (misal: eksekusi lama + churn tinggi + ada `mystery-guest`).
-2. **Skematisasi LOPO (Leave-One-Project-Out)**: Dataset yang terdiri dari 24 proyek sangat ideal untuk diuji menggunakan evaluasi *Leave-One-Project-Out CV*. Ini memberikan estimasi performa nyata jika model dipasang pada proyek open-source baru yang belum pernah dilihat (*unseen project*).
+2. **Skematisasi LOOCV (Leave-Out-One Project Cross-Validation)**: Dataset yang terdiri dari 24 proyek sangat ideal untuk diuji menggunakan evaluasi *Leave-Out-One Project Cross-Validation*. Ini memberikan estimasi performa nyata jika model dipasang pada proyek open-source baru yang belum pernah dilihat (*unseen project*).
 3. **Kompatibilitas Fitur**: Seluruh 22 fitur tersisa tersedia di seluruh 24 proyek tanpa ada *missing values* struktural.
 
 ---
@@ -56,7 +56,7 @@ Fitur seperti `testLength`, `numCoveredLines`, `projectSourceLinesCovered`, dan 
 | **Kelayakan Konseptual** | 🟢 **Sangat Layak (Highly Feasible)** | Pendekatan project-agnostic sesuai dengan *state-of-the-art* riset software engineering. |
 | **Ketersediaan Data** | 🟢 **Lengkap (Ready)** | 22 fitur bersih dan siap diproses dari 24 proyek. |
 | **Tantangan Preprocessing** | 🟡 **Butuh Feature Scaling / Ratio** | Perlu transformasi fitur absolut menjadi rasio/persentase. |
-| **Tantangan Validation Scheme** | 🟡 **Butuh LOPO Strategy** | Harus menggunakan Leave-One-Project-Out CV, bukan Random Split biasa. |
+| **Tantangan Validation Scheme** | 🟡 **Butuh LOOCV Strategy** | Harus menggunakan Leave-Out-One Project Cross-Validation, bukan Random Split biasa. |
 
 ---
 
@@ -67,7 +67,7 @@ Berikut adalah tahapan teknis pengerjaan eksperimen dari analisis data awal hing
 ```mermaid
 flowchart TD
     P1["Phase 1: Data Preparation & Inspection"] --> P2["Phase 2: Feature Engineering & Normalization"]
-    P2 --> P3["Phase 3: Cross-Project Validation Setup (LOPO)"]
+    P2 --> P3["Phase 3: Cross-Project Validation Setup (LOOCV)"]
     P3 --> P4["Phase 4: Model Training & Handling Imbalance"]
     P4 --> P5["Phase 5: Evaluation & Result Analysis"]
 ```
@@ -98,12 +98,12 @@ Untuk mengatasi perbedaan skala antar proyek, lakukan transformasi fitur:
 
 ---
 
-### Phase 3: Setup Validation Cross-Project (Leave-One-Project-Out / LOPO)
+### Phase 3: Setup Validation Cross-Project (Leave-Out-One Project Cross-Validation / LOOCV)
 
 > [!IMPORTANT]
 > **Jangan gunakan Random Train-Test Split biasa!** Random split akan mencampur test dari proyek yang sama di train dan test set (*data leakage*).
 
-1. **Skema Leave-One-Project-Out (LOPO CV)**:
+1. **Skema Leave-Out-One Project Cross-Validation (LOOCV)**:
    - Untuk setiap proyek $P_i$ dari 24 proyek:
      - **Train Set**: Data dari 23 proyek lainnya.
      - **Test Set**: Data hanya dari proyek $P_i$.
@@ -148,6 +148,6 @@ Untuk mengimplementasikan langkah-langkah di atas, disarankan membuat notebook s
 notebook/
 ├── 01_eda_and_feature_inspection.ipynb     # Analisis fitur & distribusi per proyek
 ├── 02_feature_engineering_scaling.ipynb   # Transformasi & rasio fitur
-├── 03_lopo_cross_project_experiments.ipynb # Training & evaluasi LOPO CV
+├── 03_loocv_cross_project_experiments.ipynb # Training & evaluasi LOOCV
 └── todo_analyze.md                        # Dokumen perencanaan ini
 ```
