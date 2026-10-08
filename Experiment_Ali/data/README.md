@@ -11,8 +11,8 @@ Dataset ini dikumpulkan dengan menjalankan ulang (*rerun*) test suite dari **24 
 
 | Metrik | Nilai |
 |---|---|
-| Total test case (features) | 22.235 |
-| Total test case (results) | 22.244 |
+| Total test case (features) | 22.236 |
+| Total test case (results) | 22.245 |
 | Flaky test | 811 (≈ 3,65%) |
 | Non-flaky test | 21.425 (≈ 96,35%) |
 | Jumlah proyek | 24 |
@@ -29,19 +29,48 @@ Dataset ini dikumpulkan dengan menjalankan ulang (*rerun*) test suite dari **24 
 
 File utama berisi **fitur-fitur prediktif** yang diekstraksi dari setiap test case. Digunakan sebagai input untuk melatih model machine learning.
 
-- **Baris**: 22.236 (1 header + 22.235 data)
+- **Baris**: 22.237 (1 header + 22.236 data)
 - **Kolom**: 29
+- **Status**: Dataset mentah (*raw*), masih mengandung 273 missing values pada `testLength`, `numAsserts`, dan `numCoveredLines`.
 
 ### 2.2 `test_results.csv`
 
 File berisi **hasil rerun** dari setiap test case, mencatat berapa kali test gagal/lolos dari 10.000 kali eksekusi.
 
-- **Baris**: 22.245 (1 header + 22.244 data)
+- **Baris**: 22.246 (1 header + 22.245 data)
 - **Kolom**: 8
+
+### 2.3 `cleaned_test_features.csv` *(Output Phase 1)*
+
+Dataset hasil **pembersihan & imputasi** dari `test_features.csv` (dieksekusi oleh `notebook/01_eda_and_feature_inspection.ipynb`).
+
+- **Baris**: 22.237 (1 header + 22.236 data)
+- **Kolom**: 29 (skema identik dengan `test_features.csv`)
+- **Perbedaan dari raw**: 273 missing values pada `testLength`, `numAsserts`, dan `numCoveredLines` telah diimputasi dengan *Group-Aware Per-Project Median + Probabilistic Sampling* → **0 missing values**.
+
+### 2.4 `engineered_test_features.csv` *(Output Phase 2)*
+
+Dataset hasil **feature engineering & normalisasi** dari `cleaned_test_features.csv` (dieksekusi oleh `notebook/02_feature_engineering_scaling.ipynb`).
+
+- **Baris**: 22.237 (1 header + 22.236 data)
+- **Kolom**: 58 (29 kolom asal + 29 kolom turunan)
+
+Komposisi 29 kolom turunan:
+
+| Kategori | Jumlah | Kolom |
+|---|---:|---|
+| Fitur rasio *project-agnostic* | 3 | `coverage_ratio`, `assert_density`, `class_coverage_ratio` |
+| Log transformation `log(x+1)` | 5 | `log_ExecutionTime`, `log_testLength`, `log_numCoveredLines`, `log_projectSourceLinesCovered`, `log_projectSourceClassesCovered` |
+| Scaling `StandardScaler` (prefiks `std_`) | 9 | `std_log_*` (5), `std_coverage_ratio`, `std_assert_density`, `std_class_coverage_ratio`, `std_num_third_party_libs` |
+| Scaling `RobustScaler` (prefiks `rob_`) | 9 | `rob_log_*` (5), `rob_coverage_ratio`, `rob_assert_density`, `rob_class_coverage_ratio`, `rob_num_third_party_libs` |
+| PCA reduksi multikolinearitas `hIndex` | 3 | `churn_pca_1`, `churn_pca_2`, `churn_pca_3` |
+
+> [!NOTE]
+> Kolom identitas (`Unnamed: 0`, `test_name`, `project`, `testClassName`, `testMethodName`) dan label `flaky` **dipertahankan** di semua dataset untuk kebutuhan *splitting* LOOCV dan pelacakan test case, tetapi **tidak** dimasukkan sebagai fitur prediktif.
 
 ---
 
-## 3. Skema Kolom — `test_features.csv`
+## 3. Skema Kolom — `test_features.csv` & `cleaned_test_features.csv`
 
 ### 3.1 Kolom Identifikasi
 
@@ -273,35 +302,17 @@ Berdasarkan temuan paper FlakeFlagger, fitur-fitur berikut memiliki **informatio
 ## 7. Hubungan Antar File
 
 ```mermaid
-erDiagram
-    TEST_FEATURES ||--|| TEST_RESULTS : "join on test_name ≈ Test"
-
-    TEST_FEATURES {
-        string test_name PK "ID unik test"
-        string project "Nama proyek"
-        int flaky "Label target (0/1)"
-        int test_smell_features "8 fitur binary"
-        float test_metric_features "4 fitur numerik"
-        int coverage_features "2 fitur numerik"
-        float churn_features "8 fitur numerik"
-        int num_third_party_libs "1 fitur numerik"
-    }
-
-    TEST_RESULTS {
-        string Test PK "ID unik test"
-        string Project "Nama proyek (format org-repo)"
-        int IsFlaky "Label target (0/1)"
-        int NumFailingRuns "Jumlah gagal dari 10K run"
-        int NumPassingRuns "Jumlah lolos dari 10K run"
-        int FirstFailingRunID "Run ID pertama gagal"
-        int FirstPassingRunID "Run ID pertama lolos"
-        int UniqueFailingExceptionTypes "Jumlah tipe exception"
-    }
+flowchart LR
+    RAW["test_features.csv<br/>(22.236 × 29, raw)"] -->|"Phase 1:<br/>Imputasi + EDA"| CLEAN["cleaned_test_features.csv<br/>(22.236 × 29, 0 missing)"]
+    CLEAN -->|"Phase 2:<br/>Ratio + Log + Scaling + PCA"| ENG["engineered_test_features.csv<br/>(22.236 × 58)"]
+    RESULTS["test_results.csv<br/>(22.245 × 8)"] -.->|"join pada test_name ≈ Test<br/>(analisis severity flakiness)"| RAW
 ```
 
-- **`test_features.csv`** menyediakan **fitur-fitur untuk prediksi** (input model ML).
+- **`test_features.csv`** menyediakan **fitur-fitur untuk prediksi** (input model ML) dalam bentuk mentah.
+- **`cleaned_test_features.csv`** adalah keluaran Phase 1: skema sama dengan raw, tetapi tanpa missing values.
+- **`engineered_test_features.csv`** adalah keluaran Phase 2: memuat kolom asal + kolom hasil transformasi (rasio, log, scaling, PCA) siap untuk pemodelan.
 - **`test_results.csv`** menyediakan **detail hasil rerun** yang bisa digunakan untuk analisis lebih mendalam tentang *severity* flakiness (misal: test yang gagal 5.000 dari 10.000 kali vs. yang hanya gagal 1 kali).
-- Kedua file bisa di-join berdasarkan kolom `test_name` (features) ≈ `Test` (results), dengan penyesuaian format nama.
+- `test_features.csv` dan `test_results.csv` bisa di-join berdasarkan kolom `test_name` (features) ≈ `Test` (results), dengan penyesuaian format nama.
 
 ---
 

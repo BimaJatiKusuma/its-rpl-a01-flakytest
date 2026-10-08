@@ -23,17 +23,20 @@ Berikut adalah struktur direktori proyek beserta fungsi dari masing-masing folde
 ```
 Experiment_Ali/
 ├── 📁 data/                 # Folder berisi dataset mentah & hasil pemrosesan
-│   ├── test_features.csv            # Dataset utama (22.236 baris, 29 kolom: 22 fitur prediktif)
-│   ├── test_results.csv             # Detail statistik rerun 10.000x per test case
-│   ├── cleaned_test_features.csv    # Dataset hasil pembersihan & imputasi (Phase 1)
+│   ├── test_features.csv            # Dataset mentah (22.236 baris, 29 kolom: 22 fitur prediktif)
+│   ├── test_results.csv             # Detail statistik rerun 10.000x per test case (22.245 baris)
+│   ├── cleaned_test_features.csv    # Dataset hasil pembersihan & imputasi (Phase 1, 29 kolom)
+│   ├── engineered_test_features.csv # Dataset hasil feature engineering (Phase 2, 58 kolom)
 │   └── README.md                    # Dokumentasi lengkap skema & penjelasan fitur dataset
 │
 ├── 📁 notebook/             # Folder berisi Jupyter Notebooks & dokumen analisa
 │   ├── 01_eda_and_feature_inspection.ipynb  # Phase 1: Cleaning, Imputasi & EDA per Proyek
+│   ├── 02_feature_engineering_scaling.ipynb # Phase 2: Fitur Rasio, Log Transform, Scaling & PCA
 │   └── todo_analyze.md              # Dokumen analisa posibilitas & roadmap 5-phase eksperimen
 │
 ├── 📁 script/               # Folder berisi script Python pembantu & otomatisasi
 │   ├── build_full_notebook.py       # Script untuk membuat & mengompilasi Notebook Phase 1
+│   ├── build_phase2_notebook.py     # Script untuk membuat & mengompilasi Notebook Phase 2
 │   └── generate_notebook.py         # Script pembantu template notebook
 │
 └── 📄 README.md             # Dokumen utama ini (Rekapitulasi proyek & struktur)
@@ -45,19 +48,23 @@ Experiment_Ali/
 
 ### 3.1 📂 `data/`
 Folder ini merupakan repositori data eksperimen.
-- **`test_features.csv`**: File dataset mentah yang diekstraksi oleh FlakeFlagger, berisi 22.236 test case dari 24 proyek Java open-source.
-- **`test_results.csv`**: File log hasil eksekusi 10.000 kali rerun untuk setiap test case, mencatat jumlah gagal, lolos, dan tipe exception.
-- **`cleaned_test_features.csv`**: Dataset hasil **Phase 1** di mana missing values (273 baris) pada `testLength`, `numAsserts`, dan `numCoveredLines` telah diimputasi menggunakan *Group-Aware Median & Probabilistic Imputation*.
+- **`test_features.csv`**: File dataset mentah yang diekstraksi oleh FlakeFlagger, berisi 22.236 test case dari 24 proyek Java open-source (29 kolom, 22 fitur prediktif).
+- **`test_results.csv`**: File log hasil eksekusi 10.000 kali rerun untuk setiap test case (22.245 baris), mencatat jumlah gagal, lolos, dan tipe exception.
+- **`cleaned_test_features.csv`**: Dataset hasil **Phase 1** di mana missing values (273 baris) pada `testLength`, `numAsserts`, dan `numCoveredLines` telah diimputasi menggunakan *Group-Aware Median & Probabilistic Imputation* (22.236 baris, 29 kolom, 0 missing).
+- **`engineered_test_features.csv`**: Dataset hasil **Phase 2** yang berisi 29 kolom asal + 29 kolom turunan (fitur rasio, `log1p` transform, versi `StandardScaler`/`RobustScaler`, dan 3 komponen PCA `hIndex`) → total **58 kolom**.
 - **`README.md`**: Panduan komprehensif mengenai definisi 22 fitur (Test Smell, Metrics, Coverage, H-Index Churn, dan Dependency) serta hubungan antar fitur.
 
 ### 3.2 📂 `notebook/`
 Folder ini berisi lembar kerja interaktif untuk eksplorasi data, pemodelan, dan evaluasi.
-- **`01_eda_and_feature_inspection.ipynb`**: Notebook eksekusi Phase 1 yang mencakup pemisahan matriks fitur $X$ dan metadata, imputasi missing values, analisis ketimpangan kelas target per proyek, inspeksi *domain shift* (skala fitur), dan korelasi Spearman.
+- **`01_eda_and_feature_inspection.ipynb`**: Notebook eksekusi Phase 1 yang mencakup pemisahan matriks fitur $X$ dan metadata, imputasi missing values, analisis ketimpangan kelas target per proyek, inspeksi *domain shift* (skala fitur), dan korelasi antar fitur.
+- **`02_feature_engineering_scaling.ipynb`**: Notebook eksekusi Phase 2 yang mencakup pembuatan fitur rasio *project-agnostic*, log transformation fitur skewed, perbandingan `StandardScaler` vs `RobustScaler`, reduksi multikolinearitas 8 window `hIndex` via PCA, serta ekspor `data/engineered_test_features.csv`.
 - **`todo_analyze.md`**: Dokumen analisis kelayakan (*feasibility study*) rencana *project-agnostic prediction*, tantangan utama (domain shift, class imbalance, multikolinearitas), serta strategi penanganannya.
 
 ### 3.3 📂 `script/`
 Folder ini menyimpan kode Python modular untuk mengotomatisasi pemrosesan data dan pembuatan notebook secara sistematis.
 - **`build_full_notebook.py`**: Membangun dan mengkompilasi notebook `01_eda_and_feature_inspection.ipynb` secara terstruktur dengan visualisasi dan output yang terisi.
+- **`build_phase2_notebook.py`**: Membangun dan mengkompilasi notebook `02_feature_engineering_scaling.ipynb` (Phase 2) beserta output dataset engineered.
+- **`generate_notebook.py`**: Script pembantu berisi template mentah notebook Phase 1 (versi tanpa output terisi).
 
 ---
 
@@ -107,3 +114,10 @@ Untuk membangun ulang dataset bersih dan notebook Phase 1:
 python3 script/build_full_notebook.py
 ```
 Hasil dataset bersih akan tersimpan secara otomatis di `data/cleaned_test_features.csv`.
+
+### Menjalankan Phase 2 (Feature Engineering & Scaling)
+Pastikan `data/cleaned_test_features.csv` sudah ada (hasil Phase 1), lalu:
+```bash
+python3 script/build_phase2_notebook.py
+```
+Hasil dataset engineered akan tersimpan secara otomatis di `data/engineered_test_features.csv`.
