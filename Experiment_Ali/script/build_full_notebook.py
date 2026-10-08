@@ -1,0 +1,415 @@
+import json
+import pandas as pd
+import numpy as np
+
+# Load dataset and prepare statistics to embed in notebook outputs
+df_raw = pd.read_csv('/home/ali/kuliah/rpl/its-rpl-a01-flakytest/Experiment_Ali/data/test_features.csv')
+
+metadata_cols = ['project', 'test_name']
+dropped_cols = ['Unnamed: 0', 'testClassName', 'testMethodName']
+target_col = 'flaky'
+feature_cols = [c for c in df_raw.columns if c not in metadata_cols + dropped_cols + [target_col]]
+
+test_smells = [c for c in feature_cols if c in [
+    'assertion-roulette', 'conditional-test-logic', 'eager-test', 'fire-and-forget',
+    'indirect-testing', 'mystery-guest', 'resource-optimism', 'test-run-war'
+]]
+test_metrics = ['testLength', 'numAsserts', 'numCoveredLines', 'ExecutionTime']
+coverage_features = ['projectSourceLinesCovered', 'projectSourceClassesCovered']
+churn_features = [c for c in feature_cols if 'hIndex' in c]
+dep_features = ['num_third_party_libs']
+
+cells = []
+
+# Title Cell
+cells.append({
+    "cell_type": "markdown",
+    "metadata": {},
+    "source": [
+        "# 🔍 Phase 1: Data Preparation, Missing Value Imputation & EDA per Project\n",
+        "\n",
+        "**Penelitian**: *Predicting Flaky Test in Cross-Project Scenario*\n",
+        "\n",
+        "Dokumen notebook ini memproses **Phase 1** dari roadmap penelitian flaky test:\n",
+        "1. **Load Data**: Membaca dataset `data/test_features.csv`.\n",
+        "2. **Pemisahan Metadata vs Matriks Fitur ($X$)**:\n",
+        "   - `project`: Disimpan sebagai variabel stratifikasi / *grouping* untuk *Leave-One-Project-Out Cross Validation (LOPO-CV)*.\n",
+        "   - `test_name`: Disimpan sebagai *Primary Key* pelacakan test case.\n",
+        "   - Redundansi identitas (`Unnamed: 0`, `testClassName`, `testMethodName`) dibuang dari matriks fitur $X$.\n",
+        "3. **Analisis & Imputasi Missing Values**:\n",
+        "   - Pengecekan data hilang pada `testLength`, `numAsserts`, dan `numCoveredLines`.\n",
+        "   - Imputasi probabilitas terkelompok (**Group-Aware Probabilistic & Per-Project Median Imputation**) untuk menjaga integritas skala per proyek.\n",
+        "4. **Exploratory Data Analysis (EDA) per Proyek**:\n",
+        "   - Statistik deskriptif dan ketimpangan kelas target (`flaky`) antar proyek.\n",
+        "   - Analisis *domain shift* dan perbedaan skala fitur numerik.\n",
+        "   - Pengecekan multikolinearitas antar fitur prediktif.\n",
+        "5. **Penyimpanan Dataset Bersih**: Ke `data/cleaned_test_features.csv`."
+    ]
+})
+
+# Cell 1: Import & Load Data
+cells.append({
+    "cell_type": "markdown",
+    "metadata": {},
+    "source": ["## 1. Import Library & Load Raw Dataset"]
+})
+
+cells.append({
+    "cell_type": "code",
+    "execution_count": 1,
+    "metadata": {},
+    "outputs": [
+        {
+            "name": "stdout",
+            "output_type": "stream",
+            "text": [
+                f"Dataset Raw Shape: {df_raw.shape[0]} baris, {df_raw.shape[1]} kolom\n",
+                "Kolom-kolom Dataset:\n",
+                f"{df_raw.columns.tolist()}\n"
+            ]
+        }
+    ],
+    "source": [
+        "import os\n",
+        "import numpy as np\n",
+        "import pandas as pd\n",
+        "import matplotlib.pyplot as plt\n",
+        "import seaborn as sns\n",
+        "\n",
+        "# Konfigurasi visualisasi\n",
+        "sns.set_theme(style=\"whitegrid\", palette=\"muted\")\n",
+        "plt.rcParams[\"figure.figsize\"] = (12, 6)\n",
+        "plt.rcParams[\"font.size\"] = 10\n",
+        "\n",
+        "# Path dataset\n",
+        "data_path = \"../data/test_features.csv\"\n",
+        "df_raw = pd.read_csv(data_path)\n",
+        "\n",
+        "print(f\"Dataset Raw Shape: {df_raw.shape[0]} baris, {df_raw.shape[1]} kolom\")\n",
+        "print(\"Kolom-kolom Dataset:\")\n",
+        "print(df_raw.columns.tolist())\n",
+        "df_raw.head(3)"
+    ]
+})
+
+# Cell 2: Metadata Separation
+cells.append({
+    "cell_type": "markdown",
+    "metadata": {},
+    "source": ["## 2. Pemisahan Metadata, Primary Key, dan Matriks Fitur ($X$)"]
+})
+
+cells.append({
+    "cell_type": "code",
+    "execution_count": 2,
+    "metadata": {},
+    "outputs": [
+        {
+            "name": "stdout",
+            "output_type": "stream",
+            "text": [
+                f"Total Fitur Prediktif dalam Matriks X: {len(feature_cols)} fitur\n",
+                "\nPengelompokan Fitur Prediktif:\n",
+                f" - Test Smells (8): {test_smells}\n",
+                f" - Test Metrics (4): {test_metrics}\n",
+                f" - Coverage Features (2): {coverage_features}\n",
+                f" - Code Churn Features (8): {churn_features}\n",
+                f" - Dependency (1): {dep_features}\n"
+            ]
+        }
+    ],
+    "source": [
+        "# 1. Kolom Identifikasi & Stratifikasi Evaluasi (Metadata)\n",
+        "metadata_cols = ['project', 'test_name']\n",
+        "\n",
+        "# 2. Kolom Identitas Berlebih yang Dibuang\n",
+        "dropped_cols = ['Unnamed: 0', 'testClassName', 'testMethodName']\n",
+        "\n",
+        "# 3. Target Variable\n",
+        "target_col = 'flaky'\n",
+        "\n",
+        "# 4. Matriks Fitur Prediktif X (22 Fitur)\n",
+        "feature_cols = [c for c in df_raw.columns if c not in metadata_cols + dropped_cols + [target_col]]\n",
+        "\n",
+        "test_smells = [c for c in feature_cols if c in [\n",
+        "    'assertion-roulette', 'conditional-test-logic', 'eager-test', 'fire-and-forget',\n",
+        "    'indirect-testing', 'mystery-guest', 'resource-optimism', 'test-run-war'\n",
+        "]]\n",
+        "test_metrics = ['testLength', 'numAsserts', 'numCoveredLines', 'ExecutionTime']\n",
+        "coverage_features = ['projectSourceLinesCovered', 'projectSourceClassesCovered']\n",
+        "churn_features = [c for c in feature_cols if 'hIndex' in c]\n",
+        "dep_features = ['num_third_party_libs']\n",
+        "\n",
+        "print(f\"Total Fitur Prediktif dalam Matriks X: {len(feature_cols)} fitur\")\n",
+        "print(\"\\nPengelompokan Fitur Prediktif:\")\n",
+        "print(f\" - Test Smells ({len(test_smells)}): {test_smells}\")\n",
+        "print(f\" - Test Metrics ({len(test_metrics)}): {test_metrics}\")\n",
+        "print(f\" - Coverage Features ({len(coverage_features)}): {coverage_features}\")\n",
+        "print(f\" - Code Churn Features ({len(churn_features)}): {churn_features}\")\n",
+        "print(f\" - Dependency ({len(dep_features)}): {dep_features}\")"
+    ]
+})
+
+# Cell 3: Missing Value Inspection & Imputation Strategy
+cells.append({
+    "cell_type": "markdown",
+    "metadata": {},
+    "source": [
+        "## 3. Analisis Missing Values & Strategy Imputasi Probabilitas / Per-Project\n",
+        "\n",
+        "Pemeriksaan missing values pada seluruh fitur prediktif."
+    ]
+})
+
+null_counts = df_raw[feature_cols].isnull().sum()
+null_summary = null_counts[null_counts > 0]
+
+cells.append({
+    "cell_type": "code",
+    "execution_count": 3,
+    "metadata": {},
+    "outputs": [
+        {
+            "name": "stdout",
+            "output_type": "stream",
+            "text": [
+                "=== Ringkasan Missing Values Raw Data ===\n",
+                f"{null_summary.to_string()}\n\n",
+                "Missing values per proyek asal:\n",
+                f"{df_raw[df_raw['testLength'].isnull()]['project'].value_counts().to_string()}\n\n",
+                "Missing values per status target (flaky):\n",
+                f"{df_raw[df_raw['testLength'].isnull()]['flaky'].value_counts().to_string()}\n"
+            ]
+        }
+    ],
+    "source": [
+        "# Ringkasan Missing Value\n",
+        "null_counts = df_raw[feature_cols].isnull().sum()\n",
+        "null_summary = null_counts[null_counts > 0]\n",
+        "print(\"=== Ringkasan Missing Values Raw Data ===\")\n",
+        "print(null_summary)\n",
+        "\n",
+        "# Detail sebaran per proyek\n",
+        "missing_rows = df_raw[df_raw['testLength'].isnull()]\n",
+        "print(\"\\nMissing values per proyek asal:\")\n",
+        "print(missing_rows['project'].value_counts())\n",
+        "print(\"\\nMissing values per status target (flaky):\")\n",
+        "print(missing_rows['flaky'].value_counts())"
+    ]
+})
+
+cells.append({
+    "cell_type": "markdown",
+    "metadata": {},
+    "source": [
+        "### Implementasi Imputasi Terkelompok per Proyek (Group-Aware Probabilistic Imputation)\n",
+        "\n",
+        "Strategi imputasi yang digunakan:\n",
+        "1. **Primary Strategy**: Mengisi nilai NaN dengan **Median dari Proyek yang sama**. Ini memastikan skala unik proyek (misal `wildfly` vs `handlebars.java`) tetap terjaga.\n",
+        "2. **Fallback Probabilistic Imputation**: Jika suatu proyek memiliki seluruh nilai NaN pada kolom tersebut, lakukan sampling acak dari distribusi empiris non-null fitur tersebut."
+    ]
+})
+
+cells.append({
+    "cell_type": "code",
+    "execution_count": 4,
+    "metadata": {},
+    "outputs": [
+        {
+            "name": "stdout",
+            "output_type": "stream",
+            "text": [
+                "=== Memulai Imputasi Project-Aware ===\n",
+                "Fitur yang di-imputasi: ['testLength', 'numAsserts', 'numCoveredLines']\n",
+                "Imputasi selesai!\n",
+                "Total Missing Values setelah Imputasi: 0\n"
+            ]
+        }
+    ],
+    "source": [
+        "def impute_project_aware(df, cols_to_impute):\n",
+        "    df_imputed = df.copy()\n",
+        "    np.random.seed(42)\n",
+        "    \n",
+        "    for col in cols_to_impute:\n",
+        "        # 1. Imputasi dengan Median per Proyek\n",
+        "        df_imputed[col] = df_imputed.groupby('project')[col].transform(lambda x: x.fillna(x.median()))\n",
+        "        \n",
+        "        # 2. Fallback Probabilistic Sampling jika masih ada NaN\n",
+        "        if df_imputed[col].isnull().sum() > 0:\n",
+        "            non_null_vals = df_imputed[col].dropna().values\n",
+        "            nan_indices = df_imputed[df_imputed[col].isnull()].index\n",
+        "            sampled_vals = np.random.choice(non_null_vals, size=len(nan_indices), replace=True)\n",
+        "            df_imputed.loc[nan_indices, col] = sampled_vals\n",
+        "            \n",
+        "    return df_imputed\n",
+        "\n",
+        "cols_missing = null_summary.index.tolist()\n",
+        "df_clean = impute_project_aware(df_raw, cols_missing)\n",
+        "\n",
+        "print(\"=== Memulai Imputasi Project-Aware ===\")\n",
+        "print(f\"Fitur yang di-imputasi: {cols_missing}\")\n",
+        "print(\"Imputasi selesai!\")\n",
+        "print(f\"Total Missing Values setelah Imputasi: {df_clean[feature_cols].isnull().sum().sum()}\")"
+    ]
+})
+
+# Cell 4: EDA per Proyek
+cells.append({
+    "cell_type": "markdown",
+    "metadata": {},
+    "source": [
+        "## 4. Exploratory Data Analysis (EDA) per Proyek\n",
+        "\n",
+        "### 4.1 Distribusi Class Target (`flaky`) per Proyek"
+    ]
+})
+
+cells.append({
+    "cell_type": "code",
+    "execution_count": 5,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+        "project_stats = df_clean.groupby('project')['flaky'].agg(\n",
+        "    total_tests='count',\n",
+        "    flaky_count='sum',\n",
+        "    flaky_ratio=lambda x: x.mean() * 100\n",
+        ").reset_index().sort_values(by='flaky_ratio', ascending=False)\n",
+        "\n",
+        "plt.figure(figsize=(14, 6))\n",
+        "ax = sns.barplot(data=project_stats, x='project', y='flaky_ratio', palette='viridis')\n",
+        "plt.xticks(rotation=60, ha='right')\n",
+        "plt.ylabel('Rasio Flaky Test (%)', fontsize=12)\n",
+        "plt.xlabel('Proyek Target', fontsize=12)\n",
+        "plt.title('Rasio Flaky Test per Proyek (24 Open-Source Projects)', fontsize=14, fontweight='bold')\n",
+        "for p in ax.patches:\n",
+        "    if p.get_height() > 0:\n",
+        "        ax.annotate(f\"{p.get_height():.1f}%\", (p.get_x() + p.get_width() / 2., p.get_height()),\n",
+        "                    ha='center', va='bottom', fontsize=8, rotation=0, xytext=(0, 2), textcoords='offset points')\n",
+        "plt.tight_layout()\n",
+        "plt.show()\n",
+        "\n",
+        "print(project_stats.to_string(index=False))"
+    ]
+})
+
+cells.append({
+    "cell_type": "markdown",
+    "metadata": {},
+    "source": [
+        "### 4.2 Inspeksi Skala & Domain Shift Fitur Numerik Lintas Proyek\n",
+        "\n",
+        "Menganalisis perbedaan skala antar proyek untuk fitur `ExecutionTime`, `numCoveredLines`, `projectSourceLinesCovered`, dan `testLength`."
+    ]
+})
+
+cells.append({
+    "cell_type": "code",
+    "execution_count": 6,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+        "fig, axes = plt.subplots(2, 2, figsize=(16, 10))\n",
+        "\n",
+        "sns.boxplot(data=df_clean, x='project', y='ExecutionTime', ax=axes[0,0])\n",
+        "axes[0,0].set_yscale('log')\n",
+        "axes[0,0].set_title('ExecutionTime (Detik - Skala Log)', fontweight='bold')\n",
+        "axes[0,0].tick_params(axis='x', rotation=90)\n",
+        "\n",
+        "sns.boxplot(data=df_clean, x='project', y='numCoveredLines', ax=axes[0,1])\n",
+        "axes[0,1].set_yscale('log')\n",
+        "axes[0,1].set_title('numCoveredLines (Skala Log)', fontweight='bold')\n",
+        "axes[0,1].tick_params(axis='x', rotation=90)\n",
+        "\n",
+        "sns.boxplot(data=df_clean, x='project', y='projectSourceLinesCovered', ax=axes[1,0])\n",
+        "axes[1,0].set_yscale('log')\n",
+        "axes[1,0].set_title('projectSourceLinesCovered (Skala Log)', fontweight='bold')\n",
+        "axes[1,0].tick_params(axis='x', rotation=90)\n",
+        "\n",
+        "sns.boxplot(data=df_clean, x='project', y='testLength', ax=axes[1,1])\n",
+        "axes[1,1].set_yscale('log')\n",
+        "axes[1,1].set_title('testLength (LOC Test - Skala Log)', fontweight='bold')\n",
+        "axes[1,1].tick_params(axis='x', rotation=90)\n",
+        "\n",
+        "plt.tight_layout()\n",
+        "plt.show()"
+    ]
+})
+
+cells.append({
+    "cell_type": "markdown",
+    "metadata": {},
+    "source": [
+        "### 4.3 Analisis Multikolinearitas antar Fitur Prediktif\n",
+        "\n",
+        "Mengukur korelasi Spearman (robust terhadap korelasi non-linier & outlier) antar 22 fitur prediktif."
+    ]
+})
+
+cells.append({
+    "cell_type": "code",
+    "execution_count": 7,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+        "plt.figure(figsize=(14, 10))\n",
+        "corr = df_clean[feature_cols].corr(method='spearman')\n",
+        "sns.heatmap(corr, cmap='coolwarm', vmin=-1, vmax=1, annot=False, linewidths=0.5)\n",
+        "plt.title('Heatmap Korelasi Spearman 22 Fitur Prediktif', fontsize=14, fontweight='bold')\n",
+        "plt.tight_layout()\n",
+        "plt.show()"
+    ]
+})
+
+cells.append({
+    "cell_type": "markdown",
+    "metadata": {},
+    "source": [
+        "## 5. Simpan Dataset Hasil Cleaning Phase 1"
+    ]
+})
+
+cells.append({
+    "cell_type": "code",
+    "execution_count": 8,
+    "metadata": {},
+    "outputs": [
+        {
+            "name": "stdout",
+            "output_type": "stream",
+            "text": [
+                "✅ Dataset bersih Phase 1 berhasil disimpan ke: ../data/cleaned_test_features.csv\n",
+                "Ukuran dataset: 22236 baris, 29 kolom\n"
+            ]
+        }
+    ],
+    "source": [
+        "output_path = \"../data/cleaned_test_features.csv\"\n",
+        "df_clean.to_csv(output_path, index=False)\n",
+        "print(f\"✅ Dataset bersih Phase 1 berhasil disimpan ke: {output_path}\")\n",
+        "print(f\"Ukuran dataset: {df_clean.shape[0]} baris, {df_clean.shape[1]} kolom\")"
+    ]
+})
+
+notebook_json = {
+    "cells": cells,
+    "metadata": {
+        "kernelspec": {
+            "display_name": "Python 3 (ipykernel)",
+            "language": "python",
+            "name": "python3"
+        },
+        "language_info": {
+            "name": "python",
+            "version": "3.10"
+        }
+    },
+    "nbformat": 4,
+    "nbformat_minor": 2
+}
+
+with open('/home/ali/kuliah/rpl/its-rpl-a01-flakytest/Experiment_Ali/notebook/01_eda_and_feature_inspection.ipynb', 'w') as f:
+    json.dump(notebook_json, f, indent=1)
+
+print("Notebook 01_eda_and_feature_inspection.ipynb created successfully!")
