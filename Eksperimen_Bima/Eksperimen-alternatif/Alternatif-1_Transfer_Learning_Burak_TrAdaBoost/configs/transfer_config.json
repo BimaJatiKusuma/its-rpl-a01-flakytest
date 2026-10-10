@@ -1,0 +1,71 @@
+{
+  "experiment_name": "Alternatif-1_Transfer_Learning_Burak_TrAdaBoost",
+  "description": "Instance-Based Filtering & Transfer Learning untuk Mitigasi Domain Shift pada Cross-Project Flaky Test Prediction",
+  "version": "1.0.0",
+  "data_settings": {
+    "cleaning_strategy": "C1",
+    "scaling_strategy": "S1",
+    "target_train_ratio": 0.10,
+    "stratify_target": true,
+    "random_state": 42
+  },
+  "hardware_settings": {
+    "use_gpu": true,
+    "gpu_device": "cuda",
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU (6GB VRAM, CUDA 13.4)"
+  },
+  "burak_filter_settings": {
+    "k_neighbors": 10,
+    "metric": "euclidean",
+    "hybrid_selection_ratio": 0.30,
+    "ensure_positive_representation": true
+  },
+  "tradaboost_settings": {
+    "n_estimators": 30,
+    "use_second_half_ensemble": true,
+    "clip_error_min": 1e-5,
+    "clip_error_max": 0.499,
+    "base_learner": {
+      "type": "xgboost",
+      "n_estimators": 25,
+      "max_depth": 4,
+      "learning_rate": 0.1,
+      "tree_method": "hist",
+      "device": "cuda",
+      "eval_metric": "logloss",
+      "random_state": 42
+    }
+  },
+  "baseline_settings": {
+    "model_type": "xgboost",
+    "n_estimators": 100,
+    "max_depth": 6,
+    "learning_rate": 0.1,
+    "tree_method": "hist",
+    "device": "cuda",
+    "eval_metric": "logloss",
+    "random_state": 42
+  },
+  "configurations": [
+    {
+      "id": "A_Baseline",
+      "name": "Baseline Cross-Project (No Transfer)",
+      "description": "Model XGBoost dilatih pada seluruh data N-1 proyek tanpa transfer learning"
+    },
+    {
+      "id": "B_Burak_Filter",
+      "name": "Burak Filter (k-NN Instance Selection)",
+      "description": "Model XGBoost dilatih pada subset proyek sumber yang merupakan k-NN (k=10) dari target manifold"
+    },
+    {
+      "id": "C_TrAdaBoost",
+      "name": "TrAdaBoost (Adaptive Sample Reweighting)",
+      "description": "Transfer AdaBoost dengan XGBoost GPU base learner yang menurunkan bobot source outlier dan meningkatkan target relevance"
+    },
+    {
+      "id": "D_Burak_TrAdaBoost_Hybrid",
+      "name": "Hybrid Burak Filter + TrAdaBoost",
+      "description": "Kombinasi Burak Filter (membuang 70% source data paling tidak relevan) dilanjutkan dengan TrAdaBoost"
+    }
+  ]
+}

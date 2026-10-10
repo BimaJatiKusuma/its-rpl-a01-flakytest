@@ -1,0 +1,75 @@
+{
+  "experiment_name": "Alternatif-4_SHAP_Feature_Interpretation",
+  "description": "Interpretasi Fitur Universal Berbasis SHAP (SHapley Additive exPlanations): Mengungkap Faktor Penentu Flakiness Lintas Proyek vs Dalam Proyek",
+  "version": "1.0.0",
+  "data_settings": {
+    "cleaning_strategy": "C1",
+    "dataset_path": "test_features.csv",
+    "random_state": 42
+  },
+  "hardware_settings": {
+    "use_gpu": true,
+    "gpu_device": "cuda",
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU (6GB VRAM, CUDA 13.4)"
+  },
+  "model_settings": {
+    "xgboost_gpu": {
+      "model_type": "xgboost",
+      "n_estimators": 100,
+      "max_depth": 6,
+      "learning_rate": 0.1,
+      "tree_method": "hist",
+      "device": "cuda",
+      "eval_metric": "logloss",
+      "random_state": 42
+    },
+    "random_forest": {
+      "model_type": "random_forest",
+      "n_estimators": 100,
+      "max_depth": null,
+      "n_jobs": -1,
+      "random_state": 42
+    }
+  },
+  "shap_settings": {
+    "explainer_type": "TreeExplainer",
+    "check_additivity": false,
+    "approximate": false
+  },
+  "taxonomy_dimensions": {
+    "test_smells": [
+      "assertion-roulette",
+      "conditional-test-logic",
+      "eager-test",
+      "fire-and-forget",
+      "indirect-testing",
+      "mystery-guest",
+      "resource-optimism",
+      "test-run-war"
+    ],
+    "execution_coverage": [
+      "testLength",
+      "numAsserts",
+      "numCoveredLines",
+      "ExecutionTime",
+      "projectSourceLinesCovered",
+      "projectSourceClassesCovered",
+      "num_third_party_libs"
+    ],
+    "code_churn": [
+      "hIndexModificationsPerCoveredLine_window5",
+      "hIndexModificationsPerCoveredLine_window10",
+      "hIndexModificationsPerCoveredLine_window25",
+      "hIndexModificationsPerCoveredLine_window50",
+      "hIndexModificationsPerCoveredLine_window75",
+      "hIndexModificationsPerCoveredLine_window100",
+      "hIndexModificationsPerCoveredLine_window500",
+      "hIndexModificationsPerCoveredLine_window10000"
+    ]
+  },
+  "case_study": {
+    "target_project": "spring-boot",
+    "num_flaky_samples": 3,
+    "num_non_flaky_samples": 3
+  }
+}

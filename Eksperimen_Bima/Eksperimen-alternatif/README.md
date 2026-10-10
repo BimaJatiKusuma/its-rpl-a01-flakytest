@@ -6,16 +6,16 @@
 
 ---
 
-## 📑 Daftar Alternatif Penelitian
+## 📑 Status Eksekusi Alternatif Penelitian
 
 Folder ini memuat empat (4) arah penelitian lanjutan (*extended research directions*) yang dirancang untuk mengatasi tantangan kritis dalam **Cross-Project Flaky Test Prediction (LOPO-CV)** serta meningkatkan kebaruan (*novelty*) riset kelompok ke tingkat publikasi bereputasi internasional (Q1 / IEEE Access):
 
-| Direktori Alternatif | Topik Riset | Fokus Utama & Algoritma | Target Akselerasi GPU |
-|---|---|---|---|
-| [`Alternatif-1_Transfer_Learning_Burak_TrAdaBoost/`](./Alternatif-1_Transfer_Learning_Burak_TrAdaBoost/) | **Instance-Based Filtering & Transfer Learning** | Mengatasi *distribution mismatch* antar proyek menggunakan **Burak Filter ($k$-NN)** dan **TrAdaBoost** (Afeltra et al., 2024). | XGBoost GPU (`device="cuda"`), kalkulasi matriks jarak berkecepatan tinggi. |
-| [`Alternatif-2_Dynamic_Threshold_Tuning/`](./Alternatif-2_Dynamic_Threshold_Tuning/) | **Validation-Based Dynamic Threshold Tuning** | Mengganti threshold default 0.5 dengan *Inner Validation Tuning* (F1-maximizing / Cost-sensitive threshold) untuk menangani ketimpangan kelas ekstrem (3.65% flaky). | Fast batch inference `predict_proba` pada GPU untuk ratusan grid split. |
-| [`Alternatif-3_Project_Agnostic_Feature_Engineering/`](./Alternatif-3_Project_Agnostic_Feature_Engineering/) | **Project-Agnostic Feature Engineering & Normalisasi Relatif** | Menghilangkan bias ukuran proyek melalui *ratio metrics* (Assert Density, Coverage Ratio), Log-transform, dan PCA Churn H-Index. | Pelatihan model tree regularized pada GPU dengan dimensionalitas baru. |
-| [`Alternatif-4_SHAP_Feature_Interpretation/`](./Alternatif-4_SHAP_Feature_Interpretation/) | **Universal Feature Interpretation Menggunakan SHAP** | Menjelaskan faktor pemicu flakiness lintas proyek menggunakan **SHAP TreeExplainer** dan membandingkan pergeseran fitur vs Within-Project. | GPU TreeExplainer & tensorized batch processing untuk komputasi nilai Shapley. |
+| Direktori Alternatif | Topik Riset | Status Eksekusi | Laporan & Deliverables |
+|---|---|:---:|---|
+| [`Alternatif-1_Transfer_Learning_Burak_TrAdaBoost/`](./Alternatif-1_Transfer_Learning_Burak_TrAdaBoost/) | **Instance-Based Filtering & Transfer Learning** (Burak Filter & TrAdaBoost) | ✅ **Selesai** | [`LAPORAN_ALTERNATIF_1.md`](./Alternatif-1_Transfer_Learning_Burak_TrAdaBoost/LAPORAN_ALTERNATIF_1.md) — *Recall naik +91,7%, PR-AUC naik +14,7%* |
+| [`Alternatif-2_Dynamic_Threshold_Tuning/`](./Alternatif-2_Dynamic_Threshold_Tuning/) | **Validation-Based Dynamic Threshold Tuning vs Default 0.5** (Zero Leakage) | ✅ **Selesai** | [`LAPORAN_ALTERNATIF_2.md`](./Alternatif-2_Dynamic_Threshold_Tuning/LAPORAN_ALTERNATIF_2.md) — *F1 naik +165,4% (Youden), Recall naik +436,3%* |
+| [`Alternatif-3_Project_Agnostic_Feature_Engineering/`](./Alternatif-3_Project_Agnostic_Feature_Engineering/) | **Project-Agnostic Feature Engineering & Normalisasi Relatif** | ✅ **Selesai** | [`LAPORAN_ALTERNATIF_3.md`](./Alternatif-3_Project_Agnostic_Feature_Engineering/LAPORAN_ALTERNATIF_3.md) — *PR-AUC naik +16,6% (F2), PCA VIF=1.00* |
+| [`Alternatif-4_SHAP_Feature_Interpretation/`](./Alternatif-4_SHAP_Feature_Interpretation/) | **Universal Feature Interpretation Menggunakan SHAP** | ✅ **Selesai** | [`LAPORAN_ALTERNATIF_4.md`](./Alternatif-4_SHAP_Feature_Interpretation/LAPORAN_ALTERNATIF_4.md) — *ExecutionTime 26,8%, Spearman rho=0.9704, GPU 107x speedup* |
 
 ---
 

@@ -1,0 +1,144 @@
+{
+  "experiment_name": "Alternatif-3_Project_Agnostic_Feature_Engineering",
+  "description": "Project-Agnostic Feature Engineering & Normalisasi Relatif untuk Mitigasi Bias Skala Proyek pada Cross-Project Flaky Test Prediction",
+  "version": "1.0.0",
+  "data_settings": {
+    "cleaning_strategy": "C1",
+    "dataset_file": "test_features.csv",
+    "target_column": "flaky",
+    "project_column": "project"
+  },
+  "hardware_settings": {
+    "use_gpu": true,
+    "gpu_device": "cuda",
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU (6GB VRAM, CUDA 13.4)"
+  },
+  "feature_definitions": {
+    "test_smells": [
+      "assertion-roulette",
+      "conditional-test-logic",
+      "eager-test",
+      "fire-and-forget",
+      "indirect-testing",
+      "mystery-guest",
+      "resource-optimism",
+      "test-run-war"
+    ],
+    "execution_coverage": [
+      "testLength",
+      "numAsserts",
+      "numCoveredLines",
+      "ExecutionTime",
+      "projectSourceLinesCovered",
+      "projectSourceClassesCovered",
+      "num_third_party_libs"
+    ],
+    "churn_hindex": [
+      "hIndexModificationsPerCoveredLine_window5",
+      "hIndexModificationsPerCoveredLine_window10",
+      "hIndexModificationsPerCoveredLine_window25",
+      "hIndexModificationsPerCoveredLine_window50",
+      "hIndexModificationsPerCoveredLine_window75",
+      "hIndexModificationsPerCoveredLine_window100",
+      "hIndexModificationsPerCoveredLine_window500",
+      "hIndexModificationsPerCoveredLine_window10000"
+    ]
+  },
+  "ratios": {
+    "assert_density": {
+      "numerator": "numAsserts",
+      "denominator": "testLength",
+      "epsilon": 1.0,
+      "description": "Kerapatan asersi per baris kode tes: numAsserts / (testLength + 1)"
+    },
+    "coverage_ratio": {
+      "numerator": "numCoveredLines",
+      "denominator": "testLength",
+      "epsilon": 1.0,
+      "description": "Rasio cakupan baris produksi per baris tes: numCoveredLines / (testLength + 1)"
+    },
+    "class_coverage_ratio": {
+      "numerator": "projectSourceClassesCovered",
+      "denominator": "num_third_party_libs",
+      "epsilon": 1.0,
+      "description": "Rasio cakupan kelas produksi terhadap pustaka pihak ketiga: projectSourceClassesCovered / (num_third_party_libs + 1)"
+    },
+    "time_per_assert": {
+      "numerator": "ExecutionTime",
+      "denominator": "numAsserts",
+      "epsilon": 1.0,
+      "description": "Waktu eksekusi per asersi: ExecutionTime / (numAsserts + 1)"
+    },
+    "time_per_line": {
+      "numerator": "ExecutionTime",
+      "denominator": "numCoveredLines",
+      "epsilon": 1.0,
+      "description": "Waktu eksekusi per baris produksi tercover: ExecutionTime / (numCoveredLines + 1)"
+    }
+  },
+  "log_transforms": [
+    "ExecutionTime",
+    "testLength",
+    "numCoveredLines",
+    "projectSourceLinesCovered",
+    "projectSourceClassesCovered",
+    "numAsserts"
+  ],
+  "pca_settings": {
+    "target_variance": 0.95,
+    "input_features": [
+      "hIndexModificationsPerCoveredLine_window5",
+      "hIndexModificationsPerCoveredLine_window10",
+      "hIndexModificationsPerCoveredLine_window25",
+      "hIndexModificationsPerCoveredLine_window50",
+      "hIndexModificationsPerCoveredLine_window75",
+      "hIndexModificationsPerCoveredLine_window100",
+      "hIndexModificationsPerCoveredLine_window500",
+      "hIndexModificationsPerCoveredLine_window10000"
+    ]
+  },
+  "feature_selection": {
+    "method": "SelectKBest_f_classif",
+    "k": 12
+  },
+  "feature_sets": {
+    "F1": {
+      "id": "F1_Original",
+      "name": "Set F1 (Original Baseline)",
+      "description": "23 fitur asli FlakeFlagger (Alshammari et al., 2021)"
+    },
+    "F2": {
+      "id": "F2_Ratios_Only",
+      "name": "Set F2 (Original + Ratios)",
+      "description": "23 fitur asli FlakeFlagger + 5 fitur rasio relatif baru (28 fitur)"
+    },
+    "F3": {
+      "id": "F3_Project_Agnostic",
+      "name": "Set F3 (Project-Agnostic Reformed)",
+      "description": "5 Rasio relatif + 8 Test Smells + Log-transformed execution metrics + PCA Churn components (menghapus metrik absolut mentah)"
+    },
+    "F4": {
+      "id": "F4_Feature_Selection",
+      "name": "Set F4 (Feature Selected F3)",
+      "description": "Top-K (k=12) fitur terseleksi dari F3 menggunakan ANOVA F-value pada fold training"
+    }
+  },
+  "models": {
+    "xgboost_gpu": {
+      "model_type": "xgboost",
+      "n_estimators": 100,
+      "max_depth": 6,
+      "learning_rate": 0.1,
+      "tree_method": "hist",
+      "device": "cuda",
+      "eval_metric": "logloss",
+      "random_state": 42
+    },
+    "random_forest": {
+      "model_type": "random_forest",
+      "n_estimators": 100,
+      "n_jobs": -1,
+      "random_state": 42
+    }
+  }
+}

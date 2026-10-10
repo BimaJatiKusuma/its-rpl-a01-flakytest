@@ -1,0 +1,24 @@
+feature,dimension,within_mean_abs_shap,within_rank,within_importance_pct,cross_mean_abs_shap,cross_rank,cross_importance_pct,rank_shift
+ExecutionTime,Execution & Coverage,1.1329552,1,26.310926,1.1518689,1,26.753319,0
+hIndexModificationsPerCoveredLine_window100,Code Churn,0.39840114,2,9.252178,0.3979686,2,9.243221,0
+projectSourceClassesCovered,Execution & Coverage,0.31204808,4,7.2467775,0.38849705,3,9.023235,1
+projectSourceLinesCovered,Execution & Coverage,0.33733964,3,7.83413,0.32777202,4,7.6128354,-1
+hIndexModificationsPerCoveredLine_window10,Code Churn,0.24141003,5,5.606331,0.21290846,5,4.9450135,0
+hIndexModificationsPerCoveredLine_window10000,Code Churn,0.15822269,10,3.6744487,0.2106358,6,4.892229,4
+numCoveredLines,Execution & Coverage,0.20596342,7,4.783144,0.19828081,7,4.605272,0
+testLength,Execution & Coverage,0.20139709,8,4.677099,0.17447154,8,4.0522776,0
+num_third_party_libs,Execution & Coverage,0.13546577,12,3.1459584,0.1735972,9,4.03197,3
+hIndexModificationsPerCoveredLine_window50,Code Churn,0.20647727,6,4.795078,0.16099414,10,3.7392511,-4
+fire-and-forget,Test Smells,0.13685666,11,3.1782594,0.14019467,11,3.2561626,0
+hIndexModificationsPerCoveredLine_window500,Code Churn,0.18796962,9,4.3652697,0.1395829,12,3.2419536,-3
+numAsserts,Execution & Coverage,0.1255746,13,2.916253,0.104744196,13,2.4327896,0
+hIndexModificationsPerCoveredLine_window75,Code Churn,0.08900223,15,2.066923,0.09310352,14,2.1624231,1
+indirect-testing,Test Smells,0.09191501,14,2.1345673,0.09100475,15,2.1136773,-1
+hIndexModificationsPerCoveredLine_window25,Code Churn,0.08774093,16,2.0376313,0.09010925,16,2.092878,0
+mystery-guest,Test Smells,0.042833026,19,0.994723,0.051341195,17,1.192451,2
+test-run-war,Test Smells,0.057787195,17,1.3420078,0.050248995,18,1.1670836,-1
+hIndexModificationsPerCoveredLine_window5,Code Churn,0.05494315,18,1.2759597,0.04726407,19,1.0977557,-1
+assertion-roulette,Test Smells,0.04100419,20,0.95225143,0.04223246,20,0.98089147,0
+resource-optimism,Test Smells,0.035712086,21,0.8293515,0.03049121,21,0.7081891,0
+eager-test,Test Smells,0.02217979,22,0.51508725,0.02505545,22,0.5819381,0
+conditional-test-logic,Test Smells,0.0028267212,23,0.06564572,0.0031509597,23,0.07318422,0

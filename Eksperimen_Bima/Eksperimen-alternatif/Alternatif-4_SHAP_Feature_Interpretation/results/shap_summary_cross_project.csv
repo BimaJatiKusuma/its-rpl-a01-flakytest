@@ -1,0 +1,24 @@
+feature,mean_abs_shap,dimension,rank,relative_importance_pct
+ExecutionTime,1.1518689,Execution & Coverage,1,26.753319
+hIndexModificationsPerCoveredLine_window100,0.3979686,Code Churn,2,9.243221
+projectSourceClassesCovered,0.38849705,Execution & Coverage,3,9.023235
+projectSourceLinesCovered,0.32777202,Execution & Coverage,4,7.6128354
+hIndexModificationsPerCoveredLine_window10,0.21290846,Code Churn,5,4.9450135
+hIndexModificationsPerCoveredLine_window10000,0.2106358,Code Churn,6,4.892229
+numCoveredLines,0.19828081,Execution & Coverage,7,4.605272
+testLength,0.17447154,Execution & Coverage,8,4.0522776
+num_third_party_libs,0.1735972,Execution & Coverage,9,4.03197
+hIndexModificationsPerCoveredLine_window50,0.16099414,Code Churn,10,3.7392511
+fire-and-forget,0.14019467,Test Smells,11,3.2561626
+hIndexModificationsPerCoveredLine_window500,0.1395829,Code Churn,12,3.2419536
+numAsserts,0.104744196,Execution & Coverage,13,2.4327896
+hIndexModificationsPerCoveredLine_window75,0.09310352,Code Churn,14,2.1624231
+indirect-testing,0.09100475,Test Smells,15,2.1136773
+hIndexModificationsPerCoveredLine_window25,0.09010925,Code Churn,16,2.092878
+mystery-guest,0.051341195,Test Smells,17,1.192451
+test-run-war,0.050248995,Test Smells,18,1.1670836
+hIndexModificationsPerCoveredLine_window5,0.04726407,Code Churn,19,1.0977557
+assertion-roulette,0.04223246,Test Smells,20,0.98089147
+resource-optimism,0.03049121,Test Smells,21,0.7081891
+eager-test,0.02505545,Test Smells,22,0.5819381
+conditional-test-logic,0.0031509597,Test Smells,23,0.07318422

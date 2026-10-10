@@ -1,0 +1,70 @@
+{
+  "spearman_rho": 0.9703557312252965,
+  "spearman_pval": 1.9754383177126042e-14,
+  "pearson_r": 0.9931861163346367,
+  "pearson_pval": 4.307932458864842e-21,
+  "dimension_contributions": [
+    {
+      "dimension": "Code Churn",
+      "within_mean_abs_shap": 1.42416706,
+      "cross_mean_abs_shap": 1.35256674,
+      "within_importance_pct": 33.0738194,
+      "cross_importance_pct": 31.414725,
+      "delta_importance_pct": -1.6590943999999972
+    },
+    {
+      "dimension": "Execution & Coverage",
+      "within_mean_abs_shap": 2.4507438,
+      "cross_mean_abs_shap": 2.519231716,
+      "within_importance_pct": 56.9142879,
+      "cross_importance_pct": 58.5116986,
+      "delta_importance_pct": 1.5974107000000046
+    },
+    {
+      "dimension": "Test Smells",
+      "within_mean_abs_shap": 0.4311146782,
+      "cross_mean_abs_shap": 0.43371968969999997,
+      "within_importance_pct": 10.0118934,
+      "cross_importance_pct": 10.07357739,
+      "delta_importance_pct": 0.06168399000000058
+    }
+  ],
+  "test_smells_shift": {
+    "mean_rank_shift": 0.0,
+    "smells_promoted": 1,
+    "smells_demoted": 2,
+    "smells_unchanged": 5
+  },
+  "top_universal_cross_features": [
+    {
+      "feature": "ExecutionTime",
+      "cross_rank": 1,
+      "cross_importance_pct": 26.753319,
+      "rank_shift": 0
+    },
+    {
+      "feature": "hIndexModificationsPerCoveredLine_window100",
+      "cross_rank": 2,
+      "cross_importance_pct": 9.243221,
+      "rank_shift": 0
+    },
+    {
+      "feature": "projectSourceClassesCovered",
+      "cross_rank": 3,
+      "cross_importance_pct": 9.023235,
+      "rank_shift": 1
+    },
+    {
+      "feature": "projectSourceLinesCovered",
+      "cross_rank": 4,
+      "cross_importance_pct": 7.6128354,
+      "rank_shift": -1
+    },
+    {
+      "feature": "hIndexModificationsPerCoveredLine_window10",
+      "cross_rank": 5,
+      "cross_importance_pct": 4.9450135,
+      "rank_shift": 0
+    }
+  ]
+}
