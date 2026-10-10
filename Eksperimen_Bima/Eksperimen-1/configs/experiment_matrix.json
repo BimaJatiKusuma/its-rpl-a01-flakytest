@@ -1,0 +1,61 @@
+{
+  "experiment_name": "Eksperimen-1_Main_Research_Plan",
+  "dataset": {
+    "feature_file": "../../test_features.csv",
+    "result_file": "../../test_results.csv",
+    "project_info": "../../Project_Info.csv"
+  },
+  "hardware": {
+    "gpu_target": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "cuda_version": "13.4",
+    "xgboost_device": "cuda",
+    "xgboost_tree_method": "hist",
+    "rf_n_jobs": -1
+  },
+  "cleaning_strategies": {
+    "C1": {
+      "name": "Row-Level Drop",
+      "description": "Drop 273 rows with NaN values in testLength, numAsserts, or numCoveredLines. Retain all 24 projects.",
+      "expected_rows": 21963,
+      "expected_projects": 24
+    },
+    "C2": {
+      "name": "Project-Level Drop",
+      "description": "Drop 5 projects that contain any NaN values (wildfly, logback, spring-boot, wro4j, handlebars.java).",
+      "expected_projects": 19
+    }
+  },
+  "scaling_strategies": {
+    "S1": "StandardScaler",
+    "S2": "MinMaxScaler",
+    "S3": "RobustScaler"
+  },
+  "imbalance_strategies": {
+    "B1": "Baseline_None",
+    "B2": "SMOTE",
+    "B3": "RandomUnderSampler",
+    "B4": "ClassWeight_Balanced"
+  },
+  "models": {
+    "M1": {
+      "name": "RandomForest",
+      "params": {
+        "n_estimators": 100,
+        "random_state": 42,
+        "n_jobs": -1
+      }
+    },
+    "M2": {
+      "name": "XGBoost",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "tree_method": "hist",
+        "device": "cuda",
+        "random_state": 42
+      }
+    }
+  },
+  "total_pipelines": 48
+}
