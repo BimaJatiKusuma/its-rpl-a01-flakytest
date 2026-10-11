@@ -1,0 +1,198 @@
+=== FILE: 2_A_Large-Scale_Empirical_Investigation_Into_Cross-Project_Flaky_Test_Prediction.pdf (Total Pages: 11) ===
+Received 10 July 2024, accepted 8 September 2024, date of publication 11 September 2024, date of current version 23 September 2024.
+Digital Object Identifier 10.1 109/ACCESS.2024.3458184
+A Large-Scale Empirical Investigation Into
+Cross-Project Flaky Test Prediction
+ANGELO AFEL TRA1, ALFONSO CANNAVALE
+ 1, FABIANO PECORELLI
+ 2,
+VALERIA PONTILLO
+ 3, (Member, IEEE), AND FABIO PALOMBA
+ 1, (Member, IEEE)
+1Software Engineering (SeSa) Laboratory, University of Salerno, 84084 Fisciano, Italy
+2Department of Information Science and Technology, Pegaso Digital University, 80143 Naples, Italy
+3Software Languages (Soft) Laboratory, Vrije Universiteit Brussel, 1050 Brussels, Belgium
+Corresponding author: V aleria Pontillo (valeria.pontillo@vub.be)
+The work of V aleria Pontillo supported in part by the Fonds voor Wetenschappelijk Onderzoek – Vlaanderen (FWO) Strategic Basic
+Research (SBO) BaseCamp Zero under Project S000323N.
+ABSTRACT Test flakiness arises when a test case exhibits inconsistent behavior by alternating between
+passing and failing states when executed against the same code. Previous research showed the significance of
+the problem in practice, proposing empirical studies into the nature of flakiness and automated techniques for
+its detection. Machine learning models emerged as a promising approach for flaky test prediction. However,
+existing research has predominantly focused on within-project scenarios, where models are trained and tested
+using data from a single project. On the contrary, little is known about how flaky test prediction models
+may be adapted to software projects lacking sufficient historical data for effective prediction. In this paper,
+we address this gap by proposing a large-scale assessment of flaky test prediction in cross-project scenarios,
+i.e., in situations where predictive models are trained using data coming from external projects. Leveraging
+a dataset of 1,385 flaky tests from 29 open-source projects, we examine static test flakiness predict
+
+A. Afeltra et al.: Large-Scale Empirical Investigation Into Cross-Project Flaky Test Prediction
+features like textual features [42], dynamic indicators [2], and
+static metrics [44], achieving high accuracy.
+Such existing research has primarily focused on a within-
+project scenario, that is, training and testing machine learning
+models with data coming from a single project or dataset.
+As such, the findings from these studies may hold for
+software projects that maintain historical data on flaky tests
+and can utilize this data to develop predictive models tailored
+to their specific test code. However, this is not always the
+case: new software projects may lack sufficient historical data
+for effective flaky test prediction, or the systematic collection
+of flaky test data may prove prohibitively costly. In these
+cases, a cross-project approach may be more appropriate: in
+this scenario, prediction models are trained using external
+data, i.e., flaky tests from other projects. Nonetheless, cross-
+project approaches pose challenges due to the inherent
+heterogeneity of training data from external sources. Indeed,
+each software project has unique development practices,
+testing methods, and environmental factors, resulting in
+varying characteristics of flaky tests. This diversity may
+hinder the generalization of predictive models to new projects
+and introduce biases based on training data characteristics.
+The current state of the art lacks investigations into this
+matter and, for this r
+
+
+============================================================
+
+=== FILE: 4_FlakeFlagger_Predicting_Flakiness_Without_Rerunning_Tests.pdf (Total Pages: 13) ===
+2021 IEEE/ACM 43rd International Conference on Software Engineering (ICSE) |  978-1-6654-0296-5/ 20/$31.00 ©2 021 IEEE |  DOI: 10.1 109/ICSE43902.2021.00140
+2021 IEEE/ACM 43rd International Conference on Software Engineering (ICSE)
+FlakeFlagger: Predicting Flakiness Without
+Rerunning Tests
+Abdulrahman Alshammari1, Christopher Morris2, Michael Hilton2  and Jonathan Bell3
+1George Mason University, Fairfax, VA, USA 
+2Carnegie Mellon University, Pittsburgh, PA, USA 
+3Northeastern University, Boston, MA, USA
+aalsha2@gmu.edu, christom@andrew.cmu.edu, mhilton@cmu.edu, j.bell@northeastern.edu
+Abstract —When developers make changes to their code, they  
+typically run regression tests to detect if their recent changes  
+(re)introduce any bugs. However, many tests are flaky,  and  
+their outcomes can change  non-deterministically, failing without  
+apparent cause. Flaky tests are a significant nuisance in the  
+development process, since they make it more difficult for  
+developers to trust the outcome of their tests, and hence, it is  
+important to know which tests are flaky. The traditional approach  
+to identify flaky tests is to rerun them multiple times: if a  
+test is observed both passing and failing on the same code, it  
+is definitely flaky. We co nducted a very large empirical study  
+looking for flaky tests by rer unning the test suites of 24 projects  
+10,000 times each, and found that even with this many reruns,  
+some previously identified flaky tests were still not detected. We  
+propose FlakeFlagger, a novel approach that collects a set of  
+features describing the behavior of each test, and then predicts  
+tests that are likely to be flaky based on similar be havioral  
+features. We found that FlakeFlagger correctly labeled as flaky 
+at least as many tests as a state-of-the-art flaky test classifier, but  
+that FlakeFlagger reported far fewer false positives. This lower  
+false positive rate translates directly to saved time for researchers  
+and developers wh
+
+this classifier to determine which tests are more likely  to be 
+flaky, and focus computational resources on re-running those 
+tests first. unfortunately, we f ound that existing appr oaches 
+are not suitable to this sort of use case: in our evaluation, a 
+state-of-the-art flaky test classifier had promising recall (72%), 
+but extremely low precision (11%).
+Ideally, the features used by the classifier should be applica-
+ble to a broad range of projects, so that a m odel built on one set 
+of projects (with known flaky tests) could be applied to a new 
+project to find new flaky tests. A recent survey has found 23 
+factors that increase, decrease and otherwise affect the ability 
+to identify flakiness in tests [8]. These factors include features 
+such as the presence of test smells, hard coded values, the 
+age of test cases, and more. Inspired by this work, we collect 
+various features like these for each of the tests in our flaky 
+test dataset and created FlakeFlagger, a tool to automatically 
+predict if a test is flaky or not using these features.
+We evaluated FlakeFlagger on our large dataset of flaky 
+tests, and found it significantly more effective than the state- 
+of-the-art flaky test classifier: o n  the 23 projects evaluated, 
+FlakeFlagger outperformed the prior approach in 16 and 
+underperformed in only 3 projects — where two of them have 
+only three flaky tests in total. The four remaining projects 
+have 0% F1 score in the FlakeFlagger and the state-of-the-art 
+flaky 
+
+
+============================================================
+
+=== FILE: A01-Flaky Test Prediction.pdf (Total Pages: 9) ===
+Predicting Flaky Test in Cross-Project 
+Scenario
+KELOMPOK A01
+NRP-Mahasiswa
+6025261018 - Firmansyah Achmad Adam
+6025261006 - Bima Jati Kusuma
+6025261011 - Ali Mangsur
+6025261019 - Faradiba Annisa
+6025261021 - Ida Bagus Ari Widhiana
+Institut Teknologi Sepuluh Nopember, Surabaya - Indonesia
+
+A01 - Predicting Flaky Test in Cross-Project Scenario
+What is Flaky Test?
+Flaky test adalah test perangkat lunak menggunakan source code yang sama persis namun hasilnya tidak 
+konsisten, misal kadang-kadang failed padahal sebagian besar hasilnya passed.
+Tahapan SDLC
+Dalam konteks Software Development Life Cycle (SDLC), topik Flaky Test 
+termasuk ke dalam tahapan Testing.
+Institut Teknologi Sepuluh Nopember, Surabaya - Indonesia
+Tujuan & Manfaat
+Dengan mengetahui Flaky Test pada tahapan Testing akan membantu 
+developer dalam mencegah terjadinya masalah pada perangkat lunak saat 
+sebelum masuk ke lingkup production.
+
+
+============================================================
+
+=== FILE: s10664-022-10227-1.pdf (Total Pages: 44) ===
+https://doi.org/10.1007/s10664-022-10227-1
+Statictestﬂakinessprediction:HowFarCanWeGo?
+ValeriaPontillo1 ·FabioPalomba1 ·FilomenaFerrucci1
+Accepted:18August2022 /
+©TheAuthor(s)2022
+Abstract
+Test flakiness is a phenomenon occurring when a test case is non-deterministic and exhibits
+both a passing and failing behavior when run against the same code. Over the last years, the
+problem has been closely investigated by researchers and practitioners, who all have shown
+its relevance in practice. The software engineering research community has been working
+toward defining approaches for detecting and addressing test flakiness. Despite being quite
+accurate, most of these approaches rely on expensive dynamic steps, e.g., the computa-
+tion of code coverage information. Consequently, they might suffer from scalability issues
+that possibly preclude their practical use. This limitation has been recently targeted through
+machine learning solutions that could predict the flakiness of tests using various features,
+like source code vocabulary or a mixture of static and dynamic metrics computed on indi-
+vidual snapshots of the system. In this paper, we aim to perform a step forward and predict
+test flakiness only using static metrics . We propose a large-scale experiment on 70 Java
+projects coming from the IDFLAKIES and FLAKE FLAGGER datasets. First, we statistically
+assess the differences between flaky and non-flaky tests in terms of 25 test and production
+code metrics and smells, analyzing both their individual and combined effects. Based on the
+results achieved, we experiment with a machine learning approach that predicts test flaki-
+ness solely based on static features, comparing it with two state-of-the-art approaches. The
+key results of the study show that the static approach has performance comparable to those
+of the baselines. In addition, we found that the characteristics of the production code might
+impact the performance of the flaky test prediction models.
+Keywords Flaky tes
+
+1 Introduction
+Regression testing is a widely used approach to verify whether newly committed code
+changes introduce software faults (Pezze and Young 2008). Developers rely on test cases
+to decide on whether to merge pull requests or even deploy the entire system (Grano et al.
+2020). Perhaps more importantly, developer’s productivity is partially dependent on the out-
+come of test cases (Catolino et al. 2019; Micco 2017): this is mainly due to their ability to
+identify real faults in a timely and reliable fashion (Perez et al. 2017).
+Unfortunately, even tests can be affected by defects and, sometimes, they can suffer from
+the so-called flakiness (Luo et al.2014): this happens when a test exhibits both a passing and
+failing behavior when run against the same code, being therefore unreliable and producing
+a non-deterministic outcome. While the amount of flaky tests in software systems is typi-
+cally limited - according to previous literature on the matter (Eck et al. 2019;F o w l e r2011;
+Micco 2017), flakiness explicitly arises in around 2% of the tests. Nonetheless, it is hard
+to precisely estimate the amount of flaky tests because of their intrinsic non-determinism,
+i.e., tests might be flaky even though their flakiness does not arise. This is why researchers
+advocated the need of considering all tests as potentially flaky (Cordy et al. 2022;H a r -
+man and O’Hearn 2018). At the same time, flaky tests have a profound impact on testing
+activities: (1) They may hide real defec
+
+
+============================================================
+
