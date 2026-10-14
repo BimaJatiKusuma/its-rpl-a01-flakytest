@@ -42,7 +42,7 @@ Experiment_Ali/
 │   ├── 05_evaluation_and_interpretability.ipynb # Phase 5: Evaluasi Komprehensif & Feature Importance
 │   └── todo_analyze.md              # Dokumen analisa posibilitas & roadmap 5-phase eksperimen
 │
-├── 📁 script/               # Folder berisi script Python pembantu & otomatisasi
+├── 📁 script/               # Folder berisi script Python pembantu & otomatisasi (Skenario Utama)
 │   ├── build_full_notebook.py       # Script untuk membuat & mengompilasi Notebook Phase 1
 │   ├── build_phase2_notebook.py     # Script untuk membuat & mengompilasi Notebook Phase 2
 │   ├── build_phase3_notebook.py     # Script untuk membuat & mengompilasi Notebook Phase 3
@@ -50,7 +50,24 @@ Experiment_Ali/
 │   ├── build_phase5_notebook.py     # Script untuk membuat & mengompilasi Notebook Phase 5
 │   └── generate_notebook.py         # Script pembantu template notebook
 │
-├── 📄 result.md             # Laporan lengkap rincian hasil implementasi Phase 1 s.d. 5
+├── 📁 data_alt_1/           # Folder data eksperimen Alternatif 1 (90% Train, 10% Test Projects)
+│   ├── engineered_test_features.csv # Dataset engineered yang digunakan
+│   ├── validation_splits_metadata_90_10.json # Metadata split 90/10
+│   ├── model_comparison_90_10.csv   # Hasil perbandingan model skenario 90/10
+│   ├── feature_importance_90_10.csv # Feature importance skenario 90/10
+│   └── README.md                    # Dokumentasi dataset alternatif 1
+│
+├── 📁 notebook_alt_1/       # Folder notebook eksperimen Alternatif 1
+│   ├── 03_validation_setup_90_10.ipynb # Setup split 90% Train vs 10% Test
+│   ├── 04_model_training_90_10.ipynb   # Pelatihan model & perbandingan algoritma
+│   └── 05_evaluation_and_interpretability_90_10.ipynb # Sintesis evaluasi & interpretasi
+│
+├── 📁 script_alt_1/         # Script otomatisasi eksperimen Alternatif 1
+│   ├── build_phase3_alt1.py         # Script pembangun Phase 3 Alt 1
+│   ├── build_phase4_alt1.py         # Script pembangun Phase 4 Alt 1
+│   └── build_phase5_alt1.py         # Script pembangun Phase 5 Alt 1
+│
+├── 📄 result.md             # Laporan lengkap rincian hasil implementasi Phase 1 s.d. 5 & Alternatif 1
 └── 📄 README.md             # Dokumen utama ini (Rekapitulasi proyek & struktur)
 ```
 
