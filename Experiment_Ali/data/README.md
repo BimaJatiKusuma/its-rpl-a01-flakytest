@@ -65,6 +65,36 @@ Komposisi 29 kolom turunan:
 | Scaling `RobustScaler` (prefiks `rob_`) | 9 | `rob_log_*` (5), `rob_coverage_ratio`, `rob_assert_density`, `rob_class_coverage_ratio`, `rob_num_third_party_libs` |
 | PCA reduksi multikolinearitas `hIndex` | 3 | `churn_pca_1`, `churn_pca_2`, `churn_pca_3` |
 
+### 2.5 `validation_splits_metadata.json` *(Output Phase 3)*
+
+File konfigurasi metadata pemisahan validasi cross-project (dieksekusi oleh `notebook/03_validation_setup_loocv.ipynb`).
+
+- **Format**: JSON
+- **Isi**:
+  - Konfigurasi strategi utama: **Leave-One-Project-Out Cross-Validation (LOOCV / LOPO-CV)** 24 fold.
+  - Pemetaan per fold (`loocv_folds`): index train/test, nama proyek test, dan jumlah sampel.
+  - Konfigurasi skenario tambahan: **Multi-Project Split (70/30)** (17 proyek train, 7 proyek test).
+
+### 2.6 `loocv_folds_summary.csv` *(Output Phase 3)*
+
+Tabel ringkasan statistik komprehensif untuk 24 fold skema LOOCV.
+
+- **Baris**: 25 (1 header + 24 fold proyek)
+- **Kolom**: `Fold`, `Test Project`, `Train Size`, `Test Size`, `Flaky in Train`, `Flaky in Test`, `Test Flaky (%)`
+
+### 2.7 `model_comparison_results.csv` *(Output Phase 4)*
+
+Tabel perbandingan performa 7 model (Baseline vs Ensembles) pada skenario Multi-Project Split (70/30) dengan Cost-Sensitive Learning & Threshold Tuning.
+
+- **Model**: Dummy, Logistic Regression, GaussianNB, Random Forest, XGBoost, LightGBM, CatBoost.
+- **Metrik**: `Train Time (s)`, `ROC-AUC`, `PR-AUC`, `F1 (Thresh=0.5)`, `Recall (Thresh=0.5)`, `Opt Thresh`, `F1 (Tuned)`, `Recall (Tuned)`.
+
+### 2.8 `loocv_lgbm_results.csv` *(Output Phase 4)*
+
+Tabel hasil evaluasi komprehensif 24 Fold Leave-One-Project-Out (LOOCV) menggunakan model terbaik (LightGBM Cost-Sensitive).
+
+- **Metrik per fold**: `ROC-AUC`, `PR-AUC`, `F1-Tuned`, `Recall`, `Precision`.
+
 > [!NOTE]
 > Kolom identitas (`Unnamed: 0`, `test_name`, `project`, `testClassName`, `testMethodName`) dan label `flaky` **dipertahankan** di semua dataset untuk kebutuhan *splitting* LOOCV dan pelacakan test case, tetapi **tidak** dimasukkan sebagai fitur prediktif.
 

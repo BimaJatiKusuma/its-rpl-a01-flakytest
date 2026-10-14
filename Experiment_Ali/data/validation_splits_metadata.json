@@ -1,0 +1,182 @@
+{
+  "strategy_primary": "Leave-One-Project-Out (LOOCV)",
+  "num_folds": 24,
+  "loocv_folds": {
+    "achilles": {
+      "fold": 1,
+      "test_project": "achilles",
+      "train_size": 20919,
+      "test_size": 1317
+    },
+    "activiti": {
+      "fold": 2,
+      "test_project": "activiti",
+      "train_size": 20192,
+      "test_size": 2044
+    },
+    "alluxio": {
+      "fold": 3,
+      "test_project": "alluxio",
+      "train_size": 22049,
+      "test_size": 187
+    },
+    "ambari": {
+      "fold": 4,
+      "test_project": "ambari",
+      "train_size": 21912,
+      "test_size": 324
+    },
+    "assertj-core": {
+      "fold": 5,
+      "test_project": "assertj-core",
+      "train_size": 15975,
+      "test_size": 6261
+    },
+    "commons-exec": {
+      "fold": 6,
+      "test_project": "commons-exec",
+      "train_size": 22181,
+      "test_size": 55
+    },
+    "elastic-job-lite": {
+      "fold": 7,
+      "test_project": "elastic-job-lite",
+      "train_size": 21678,
+      "test_size": 558
+    },
+    "handlebars.java": {
+      "fold": 8,
+      "test_project": "handlebars.java",
+      "train_size": 21809,
+      "test_size": 427
+    },
+    "hbase": {
+      "fold": 9,
+      "test_project": "hbase",
+      "train_size": 21805,
+      "test_size": 431
+    },
+    "hector": {
+      "fold": 10,
+      "test_project": "hector",
+      "train_size": 22094,
+      "test_size": 142
+    },
+    "http-request": {
+      "fold": 11,
+      "test_project": "http-request",
+      "train_size": 22073,
+      "test_size": 163
+    },
+    "httpcore": {
+      "fold": 12,
+      "test_project": "httpcore",
+      "train_size": 21524,
+      "test_size": 712
+    },
+    "incubator-dubbo": {
+      "fold": 13,
+      "test_project": "incubator-dubbo",
+      "train_size": 20060,
+      "test_size": 2176
+    },
+    "java-websocket": {
+      "fold": 14,
+      "test_project": "java-websocket",
+      "train_size": 22091,
+      "test_size": 145
+    },
+    "jimfs": {
+      "fold": 15,
+      "test_project": "jimfs",
+      "train_size": 22024,
+      "test_size": 212
+    },
+    "logback": {
+      "fold": 16,
+      "test_project": "logback",
+      "train_size": 21393,
+      "test_size": 843
+    },
+    "ninja": {
+      "fold": 17,
+      "test_project": "ninja",
+      "train_size": 21929,
+      "test_size": 307
+    },
+    "okhttp": {
+      "fold": 18,
+      "test_project": "okhttp",
+      "train_size": 21426,
+      "test_size": 810
+    },
+    "orbit": {
+      "fold": 19,
+      "test_project": "orbit",
+      "train_size": 22150,
+      "test_size": 86
+    },
+    "spring-boot": {
+      "fold": 20,
+      "test_project": "spring-boot",
+      "train_size": 20109,
+      "test_size": 2127
+    },
+    "undertow": {
+      "fold": 21,
+      "test_project": "undertow",
+      "train_size": 22053,
+      "test_size": 183
+    },
+    "wildfly": {
+      "fold": 22,
+      "test_project": "wildfly",
+      "train_size": 21000,
+      "test_size": 1236
+    },
+    "wro4j": {
+      "fold": 23,
+      "test_project": "wro4j",
+      "train_size": 21091,
+      "test_size": 1145
+    },
+    "zxing": {
+      "fold": 24,
+      "test_project": "zxing",
+      "train_size": 21891,
+      "test_size": 345
+    }
+  },
+  "multi_project_split_70_30": {
+    "train_projects": [
+      "achilles",
+      "activiti",
+      "alluxio",
+      "ambari",
+      "assertj-core",
+      "commons-exec",
+      "hbase",
+      "hector",
+      "httpcore",
+      "incubator-dubbo",
+      "java-websocket",
+      "logback",
+      "ninja",
+      "okhttp",
+      "orbit",
+      "wildfly",
+      "wro4j"
+    ],
+    "test_projects": [
+      "elastic-job-lite",
+      "handlebars.java",
+      "http-request",
+      "jimfs",
+      "spring-boot",
+      "undertow",
+      "zxing"
+    ],
+    "train_size": 18221,
+    "test_size": 4015
+  }
+}
