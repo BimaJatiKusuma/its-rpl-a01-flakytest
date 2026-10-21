@@ -1,0 +1,40 @@
+{
+  "strategy": "Multi-Project Split (90% Train, 10% Test)",
+  "total_projects": 24,
+  "n_train_projects": 22,
+  "n_test_projects": 2,
+  "train_projects": [
+    "achilles",
+    "activiti",
+    "alluxio",
+    "ambari",
+    "assertj-core",
+    "commons-exec",
+    "handlebars.java",
+    "hbase",
+    "hector",
+    "http-request",
+    "httpcore",
+    "incubator-dubbo",
+    "java-websocket",
+    "jimfs",
+    "logback",
+    "ninja",
+    "okhttp",
+    "orbit",
+    "undertow",
+    "wildfly",
+    "wro4j",
+    "zxing"
+  ],
+  "test_projects": [
+    "elastic-job-lite",
+    "spring-boot"
+  ],
+  "train_samples": 19551,
+  "test_samples": 2685,
+  "train_flaky": 645,
+  "test_flaky": 166,
+  "train_flaky_pct": 3.3,
+  "test_flaky_pct": 6.18
+}

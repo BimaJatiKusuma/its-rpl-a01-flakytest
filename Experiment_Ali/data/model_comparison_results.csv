@@ -1,0 +1,8 @@
+Model,Train Time (s),ROC-AUC,PR-AUC,F1 (Thresh=0.5),Recall (Thresh=0.5),Opt Thresh,F1 (Tuned),Recall (Tuned)
+LightGBM (Cost-Sensitive),0.44,0.7326,0.0908,0.0621,0.0722,0.8164,0.0078,0.0052
+Gaussian Naive Bayes,0.01,0.5623,0.0787,0.1456,0.4845,0.9991,0.1818,0.3144
+CatBoost (Cost-Sensitive),1.26,0.6717,0.0737,0.0436,0.0412,0.8539,0.009,0.0052
+Random Forest (Balanced),0.5,0.632,0.0719,0.0102,0.0052,0.49,0.0102,0.0052
+XGBoost (Cost-Sensitive),0.81,0.6565,0.0677,0.0311,0.0258,0.9121999740600586,0.0,0.0
+Logistic Regression (Balanced),0.24,0.5896,0.0615,0.0971,0.3763,0.8571,0.1013,0.1856
+Dummy (Most Frequent),0.0,0.5,0.0483,0.0,0.0,0.0,0.0922,1.0
