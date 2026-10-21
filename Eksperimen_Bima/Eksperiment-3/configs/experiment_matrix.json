@@ -1,0 +1,62 @@
+{
+  "experiment_name": "Eksperimen-3_Repeated_LOPO_CV_and_Dataset_Capability_Analysis",
+  "dataset": {
+    "source_file": "../../Experiment_Ali/data/cleaned_test_features.csv",
+    "description": "FlakeFlagger preprocessed dataset with group-aware per-project median imputation (0 missing values, all 24 projects retained)",
+    "total_rows": 22236,
+    "total_projects": 24,
+    "flaky_count": 811,
+    "non_flaky_count": 21425,
+    "predictive_features_count": 23
+  },
+  "hardware": {
+    "gpu_target": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "cuda_version": "13.4",
+    "driver_version": "617.42",
+    "xgboost_device": "cuda",
+    "xgboost_tree_method": "hist",
+    "rf_n_jobs": -1
+  },
+  "evaluation_scheme": {
+    "validation_type": "Repeated Leave-One-Project-Out Cross-Validation (Repeated LOPO-CV)",
+    "repetitions": 5,
+    "random_seeds": [42, 100, 2024, 777, 999],
+    "folds_per_repetition": 24,
+    "total_evaluations_per_pipeline": 120,
+    "total_pipelines": 24,
+    "total_model_folds": 2880,
+    "edge_cases": {
+      "jimfs": "0 flaky test instances; calculate TNR/Specificity, handle PR-AUC/ROC-AUC safely without crash"
+    }
+  },
+  "scaling_strategies": {
+    "S1": "StandardScaler",
+    "S2": "MinMaxScaler",
+    "S3": "RobustScaler"
+  },
+  "imbalance_strategies": {
+    "B1": "Baseline_None",
+    "B2": "SMOTE",
+    "B3": "RandomUnderSampler",
+    "B4": "ClassWeight_Balanced"
+  },
+  "models": {
+    "M1": {
+      "name": "RandomForest",
+      "params": {
+        "n_estimators": 100,
+        "n_jobs": -1
+      }
+    },
+    "M2": {
+      "name": "XGBoost",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "tree_method": "hist",
+        "device": "cuda"
+      }
+    }
+  }
+}

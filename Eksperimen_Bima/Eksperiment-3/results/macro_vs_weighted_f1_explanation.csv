@@ -1,0 +1,4 @@
+Metric_Aggregation,Score,Rationale
+Unweighted Macro F1,0.17977539822656458,Rata-rata aritmatika murni: proyek 1 flaky (assertj) berbobot sama dengan 163 flaky (spring-boot)
+Flaky-Weighted F1,0.3831802764893676,Berbobot proporsi flaky test riil: proyek enterprise kaya flaky mendominasi evaluasi
+Global Micro F1,0.16655091683115958,Berbasis confusion matrix global: mengukur ketepatan total test case flaky yang berhasil ditangkap
