@@ -1,0 +1,72 @@
+{
+  "experiment_name": "Eksperimen_3_One_on_One_Afeltra_IDoFT",
+  "dataset": {
+    "source_file": "data/cleaned_idoft_test_features.csv",
+    "description": "IDoFT (Illinois Dataset of Flaky Tests) Java benchmark aligned with FlakeFlagger 23 predictive features and group-aware median imputation (0 missing values, 17 projects retained)",
+    "reference_papers": [
+      "Afeltra et al. (IEEE Access 2024) - A Large-Scale Empirical Investigation Into Cross-Project Flaky Test Prediction",
+      "Alshammari et al. (ICSE 2021) - FlakeFlagger: Predicting Flakiness Without Rerunning Tests"
+    ],
+    "total_rows": 12626,
+    "total_projects": 17,
+    "flaky_count": 264,
+    "non_flaky_count": 12362,
+    "overall_flakiness_rate_pct": 2.09,
+    "predictive_features_count": 23,
+    "active_flaky_projects_count": 13,
+    "zero_flaky_projects_count": 4
+  },
+  "hardware": {
+    "gpu_target": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "cuda_version": "12.x/13.x",
+    "xgboost_device": "cuda",
+    "xgboost_tree_method": "hist",
+    "rf_n_jobs": -1
+  },
+  "evaluation_schemes": {
+    "scheme_1_one_on_one_pairwise": {
+      "name": "One-on-One Pairwise Cross-Project Transfer Matrix",
+      "description": "Model dilatih semata-mata pada 1 proyek sumber tunggal (P_source) dan dievaluasi langsung pada 1 proyek target tunggal (P_target) untuk seluruh kombinasi pasangan (P_source != P_target).",
+      "active_projects": [
+        "achilles", "activiti", "alluxio", "hbase", "http-request",
+        "httpcore", "java-websocket", "logback", "okhttp", "spring-boot",
+        "undertow", "wildfly", "wro4j"
+      ],
+      "total_pairs": 156
+    },
+    "scheme_2_repeated_afeltra_treatments": {
+      "name": "Repeated Leave-One-Project-Out Cross-Validation under Afeltra Paper Concept",
+      "repetitions": 5,
+      "random_seeds": [42, 100, 2024, 777, 999],
+      "folds_per_repetition": 17,
+      "treatments": {
+        "T1_Baseline": "Model cross-project konvensional tanpa transfer learning (MinMaxScaler + RandomUnderSampler + RF/XGB)",
+        "T2_Burak_Filter": "Instance-based filtering menggunakan k-NN (k=10) pada manifold jarak Euclidean terstandarisasi",
+        "T3_TrAdaBoost_25": "Transfer learning TrAdaBoost dengan 25% target adaptation data (75% evaluation)",
+        "T4_TrAdaBoost_50": "Transfer learning TrAdaBoost dengan 50% target adaptation data (50% evaluation)",
+        "T5_TrAdaBoost_75": "Transfer learning TrAdaBoost dengan 75% target adaptation data (25% evaluation - Konfigurasi Terbaik Afeltra 2024)",
+        "T6_Within_Project": "Benchmark batas atas ideal (5-Fold Stratified Cross-Validation pada data proyek target)"
+      }
+    }
+  },
+  "models": {
+    "M1_RandomForest": {
+      "name": "RandomForestClassifier",
+      "params": {
+        "n_estimators": 100,
+        "class_weight": "balanced",
+        "n_jobs": -1
+      }
+    },
+    "M2_XGBoost": {
+      "name": "XGBClassifier",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "tree_method": "hist",
+        "device": "cuda"
+      }
+    }
+  }
+}

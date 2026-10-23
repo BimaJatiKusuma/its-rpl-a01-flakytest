@@ -1,0 +1,149 @@
+{
+  "dataset_name": "IDoFT_Java_Flaky_Benchmark_Cleaned",
+  "reference_paper": "Afeltra et al. (IEEE Access 2024) - A Large-Scale Empirical Investigation Into Cross-Project Flaky Test Prediction",
+  "total_instances": 12626,
+  "total_projects": 17,
+  "total_flaky_count": 264,
+  "total_non_flaky_count": 12362,
+  "overall_flakiness_rate_%": 2.09,
+  "predictive_features_count": 23,
+  "imputation_strategy": "Group-Aware Per-Project Median Imputation (Inherited from Cleaned Features)",
+  "project_demographics": [
+    {
+      "project": "achilles",
+      "total_tests": 1317,
+      "flaky_tests": 2,
+      "non_flaky_tests": 1315,
+      "flaky_rate_%": 0.15,
+      "status": "Active Flaky"
+    },
+    {
+      "project": "activiti",
+      "total_tests": 2044,
+      "flaky_tests": 38,
+      "non_flaky_tests": 2006,
+      "flaky_rate_%": 1.86,
+      "status": "Active Flaky"
+    },
+    {
+      "project": "alluxio",
+      "total_tests": 187,
+      "flaky_tests": 17,
+      "non_flaky_tests": 170,
+      "flaky_rate_%": 9.09,
+      "status": "Active Flaky"
+    },
+    {
+      "project": "elastic-job-lite",
+      "total_tests": 558,
+      "flaky_tests": 0,
+      "non_flaky_tests": 558,
+      "flaky_rate_%": 0.0,
+      "status": "Zero Flaky Target"
+    },
+    {
+      "project": "handlebars.java",
+      "total_tests": 427,
+      "flaky_tests": 0,
+      "non_flaky_tests": 427,
+      "flaky_rate_%": 0.0,
+      "status": "Zero Flaky Target"
+    },
+    {
+      "project": "hbase",
+      "total_tests": 431,
+      "flaky_tests": 1,
+      "non_flaky_tests": 430,
+      "flaky_rate_%": 0.23,
+      "status": "Active Flaky"
+    },
+    {
+      "project": "http-request",
+      "total_tests": 163,
+      "flaky_tests": 28,
+      "non_flaky_tests": 135,
+      "flaky_rate_%": 17.18,
+      "status": "Active Flaky"
+    },
+    {
+      "project": "httpcore",
+      "total_tests": 712,
+      "flaky_tests": 11,
+      "non_flaky_tests": 701,
+      "flaky_rate_%": 1.54,
+      "status": "Active Flaky"
+    },
+    {
+      "project": "java-websocket",
+      "total_tests": 145,
+      "flaky_tests": 54,
+      "non_flaky_tests": 91,
+      "flaky_rate_%": 37.24,
+      "status": "Active Flaky"
+    },
+    {
+      "project": "jimfs",
+      "total_tests": 212,
+      "flaky_tests": 0,
+      "non_flaky_tests": 212,
+      "flaky_rate_%": 0.0,
+      "status": "Zero Flaky Target"
+    },
+    {
+      "project": "logback",
+      "total_tests": 843,
+      "flaky_tests": 5,
+      "non_flaky_tests": 838,
+      "flaky_rate_%": 0.59,
+      "status": "Active Flaky"
+    },
+    {
+      "project": "okhttp",
+      "total_tests": 810,
+      "flaky_tests": 1,
+      "non_flaky_tests": 809,
+      "flaky_rate_%": 0.12,
+      "status": "Active Flaky"
+    },
+    {
+      "project": "orbit",
+      "total_tests": 86,
+      "flaky_tests": 0,
+      "non_flaky_tests": 86,
+      "flaky_rate_%": 0.0,
+      "status": "Zero Flaky Target"
+    },
+    {
+      "project": "spring-boot",
+      "total_tests": 2127,
+      "flaky_tests": 4,
+      "non_flaky_tests": 2123,
+      "flaky_rate_%": 0.19,
+      "status": "Active Flaky"
+    },
+    {
+      "project": "undertow",
+      "total_tests": 183,
+      "flaky_tests": 4,
+      "non_flaky_tests": 179,
+      "flaky_rate_%": 2.19,
+      "status": "Active Flaky"
+    },
+    {
+      "project": "wildfly",
+      "total_tests": 1236,
+      "flaky_tests": 81,
+      "non_flaky_tests": 1155,
+      "flaky_rate_%": 6.55,
+      "status": "Active Flaky"
+    },
+    {
+      "project": "wro4j",
+      "total_tests": 1145,
+      "flaky_tests": 18,
+      "non_flaky_tests": 1127,
+      "flaky_rate_%": 1.57,
+      "status": "Active Flaky"
+    }
+  ]
+}

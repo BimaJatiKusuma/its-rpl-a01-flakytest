@@ -1,0 +1,7 @@
+Metric,Value,Treatment,Average_Rank
+Friedman Chi-Square Stat,10.3786,T6_Within_Project,2.5294117647058822
+p-value,0.0651918133326159,T1_Baseline,3.411764705882353
+,,T2_Burak_Filter,3.5294117647058822
+,,T3_TrAdaBoost_25,3.7058823529411766
+,,T4_TrAdaBoost_50,3.764705882352941
+,,T5_TrAdaBoost_75,4.0588235294117645

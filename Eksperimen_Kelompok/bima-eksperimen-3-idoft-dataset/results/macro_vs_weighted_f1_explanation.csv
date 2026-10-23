@@ -1,0 +1,5 @@
+Metric_Aggregation,Score,Rationale
+Unweighted Macro F1 (17 Projects),0.057413999224182555,Rata-rata aritmatika murni: proyek 0 flaky berbobot sama dengan 81 flaky (wildfly)
+Active-Only Macro F1 (13 Projects),0.07507984513931565,Rata-rata pada 13 proyek dengan riwayat flaky test aktif di IDoFT
+Flaky-Weighted F1,0.14462670643572,Berbobot proporsi flaky test riil: proyek kaya flaky mendominasi evaluasi
+Global Micro F1,0.03694574136489471,Berbasis confusion matrix global: mengukur ketepatan total test case flaky yang ditangkap

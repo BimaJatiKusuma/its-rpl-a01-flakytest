@@ -1,0 +1,5 @@
+Skema_Agregasi,Nilai_F1,Delta_vs_Macro_17_%,Karakteristik
+1. Unweighted Macro F1 (17 Proyek),0.1105,Baseline (0.0%),Rata-rata aritmatika unweighted murni; proyek 0 flaky berbobot sama dengan proyek kaya flaky.
+2. Active-Only Macro F1 (13 Proyek),0.2087,+88.9%,Mengeksklusi 4 proyek tanpa flaky test riil di IDoFT; mengukur kemampuan pada target aktif.
+3. Flaky-Weighted Average F1,0.1899,+71.9%,Pembobotan proporsional terhadap populasi flaky riil; mencerminkan efektivitas pada repositori skala besar.
+4. Global Instance-Level Micro F1,0.0697,-36.9%,"Akumulasi langsung TP, FP, FN global; presisi ditekan oleh false positive pada proyek masif."
