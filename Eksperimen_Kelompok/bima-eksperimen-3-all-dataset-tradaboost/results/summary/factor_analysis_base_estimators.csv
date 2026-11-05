@@ -1,0 +1,9 @@
+dataset,treatment,pipeline_group,n_folds,macro_f1,std_f1,cv_pct_f1,macro_recall,macro_precision,macro_pr_auc,macro_roc_auc,macro_mcc,total_flaky_evaluated,flaky_weighted_f1
+flakeflagger,TrAdaBoost_50,Sampling_Progression,120,0.3474,0.3364,96.84,0.3875,0.4042,0.3262,0.7222,0.3295,2012,0.6397
+flakeflagger,TrAdaBoost_50_DT_depth2,Base_Estimator_Depth,120,0.2362,0.2802,118.6,0.3854,0.2753,0.2346,0.6756,0.2087,2012,0.4383
+flakeflagger,TrAdaBoost_50_DT_depth6,Base_Estimator_Depth,120,0.3429,0.3423,99.82,0.379,0.3812,0.2943,0.6983,0.3199,2012,0.6499
+flakeflagger,TrAdaBoost_50_RF_base,Base_Estimator_Depth,120,0.395,0.3555,90.02,0.3941,0.5223,0.3904,0.7522,0.3776,2012,0.6648
+idoft,TrAdaBoost_50,Sampling_Progression,85,0.2136,0.3122,146.17,0.2231,0.3234,0.2066,0.623,0.1984,651,0.512
+idoft,TrAdaBoost_50_DT_depth2,Base_Estimator_Depth,85,0.1914,0.2886,150.77,0.233,0.3538,0.1921,0.6474,0.1754,651,0.4441
+idoft,TrAdaBoost_50_DT_depth6,Base_Estimator_Depth,85,0.24,0.3015,125.66,0.2792,0.3518,0.2068,0.6502,0.2322,651,0.566
+idoft,TrAdaBoost_50_RF_base,Base_Estimator_Depth,85,0.2519,0.3253,129.16,0.2697,0.48,0.2666,0.6833,0.2449,651,0.5641

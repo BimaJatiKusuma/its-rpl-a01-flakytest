@@ -1,0 +1,9 @@
+dataset,treatment,pipeline_group,n_folds,macro_f1,std_f1,cv_pct_f1,macro_recall,macro_precision,macro_pr_auc,macro_roc_auc,macro_mcc,total_flaky_evaluated,flaky_weighted_f1
+flakeflagger,TrAdaBoost_50,Sampling_Progression,120,0.3474,0.3364,96.84,0.3875,0.4042,0.3262,0.7222,0.3295,2012,0.6397
+flakeflagger,TrAdaBoost_50_all_estimators,TrAdaBoost_Hyperparameters,120,0.3472,0.3448,99.31,0.375,0.4126,0.3855,0.7761,0.3333,2012,0.6474
+flakeflagger,TrAdaBoost_50_iter10,TrAdaBoost_Hyperparameters,120,0.3394,0.3224,94.98,0.4049,0.3816,0.3172,0.7273,0.3149,2012,0.5904
+flakeflagger,TrAdaBoost_50_iter30,TrAdaBoost_Hyperparameters,120,0.3468,0.3434,99.01,0.3798,0.4185,0.3203,0.7289,0.3316,2012,0.6487
+idoft,TrAdaBoost_50,Sampling_Progression,85,0.2136,0.3122,146.17,0.2231,0.3234,0.2066,0.623,0.1984,651,0.512
+idoft,TrAdaBoost_50_all_estimators,TrAdaBoost_Hyperparameters,85,0.2235,0.3235,144.72,0.2228,0.3502,0.2654,0.6817,0.2119,651,0.5547
+idoft,TrAdaBoost_50_iter10,TrAdaBoost_Hyperparameters,85,0.2115,0.3113,147.17,0.2318,0.3214,0.1892,0.6416,0.2005,651,0.5172
+idoft,TrAdaBoost_50_iter30,TrAdaBoost_Hyperparameters,85,0.2213,0.3277,148.09,0.2273,0.3366,0.2077,0.6266,0.2089,651,0.5516

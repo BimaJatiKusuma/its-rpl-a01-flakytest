@@ -1,0 +1,7 @@
+dataset,treatment,pipeline_group,n_folds,macro_f1,std_f1,cv_pct_f1,macro_recall,macro_precision,macro_pr_auc,macro_roc_auc,macro_mcc,total_flaky_evaluated,flaky_weighted_f1
+flakeflagger,TrAdaBoost_50,Sampling_Progression,120,0.3474,0.3364,96.84,0.3875,0.4042,0.3262,0.7222,0.3295,2012,0.6397
+flakeflagger,TrAdaBoost_50_S1_Standard,Feature_Scaling,120,0.3476,0.3364,96.78,0.3875,0.4043,0.3266,0.7224,0.3297,2012,0.6397
+flakeflagger,TrAdaBoost_50_S3_Robust,Feature_Scaling,120,0.3476,0.3366,96.84,0.3886,0.4036,0.3269,0.7226,0.3297,2012,0.6401
+idoft,TrAdaBoost_50,Sampling_Progression,85,0.2136,0.3122,146.17,0.2231,0.3234,0.2066,0.623,0.1984,651,0.512
+idoft,TrAdaBoost_50_S1_Standard,Feature_Scaling,85,0.218,0.3157,144.79,0.2257,0.3184,0.2086,0.6239,0.2035,651,0.5165
+idoft,TrAdaBoost_50_S3_Robust,Feature_Scaling,85,0.2164,0.3139,145.05,0.2257,0.3266,0.2075,0.6242,0.2014,651,0.5146

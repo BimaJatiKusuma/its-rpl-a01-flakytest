@@ -1,0 +1,3 @@
+dataset,n_projects,metric,friedman_stat,p_value,is_significant,rank_Baseline_Zero_Shot_RF,rank_Baseline_Zero_Shot_XGB,rank_TrAdaBoost_25,rank_TrAdaBoost_50,rank_TrAdaBoost_75,rank_Within_Project
+flakeflagger,24,f1_score,51.6551,6.348796350775518e-10,True,4.56,5.04,3.67,2.92,2.73,2.08
+idoft,17,f1_score,13.2469,0.021171585736759136,True,4.26,4.03,3.59,3.26,3.29,2.56

@@ -1,0 +1,7 @@
+dataset,treatment,pipeline_group,n_folds,macro_f1,std_f1,cv_pct_f1,macro_recall,macro_precision,macro_pr_auc,macro_roc_auc,macro_mcc,total_flaky_evaluated,flaky_weighted_f1
+flakeflagger,Baseline_Zero_Shot_RF,Sampling_Progression,120,0.1769,0.2287,129.31,0.4126,0.1728,0.2128,0.7101,0.151,4055,0.3751
+flakeflagger,RowDrop_Baseline_RF,Data_Cleaning,120,0.1761,0.2235,126.89,0.4429,0.1893,0.2041,0.7108,0.1543,4040,0.3703
+flakeflagger,RowDrop_TrAdaBoost_50,Data_Cleaning,120,0.3394,0.34,100.17,0.3607,0.4129,0.3211,0.7152,0.3188,2007,0.6222
+flakeflagger,RowDrop_Within_Project,Data_Cleaning,120,0.4486,0.3519,78.44,0.4315,0.5506,0.4503,0.7951,0.4408,4040,0.7326
+flakeflagger,TrAdaBoost_50,Sampling_Progression,120,0.3474,0.3364,96.84,0.3875,0.4042,0.3262,0.7222,0.3295,2012,0.6397
+flakeflagger,Within_Project,Sampling_Progression,120,0.4487,0.3493,77.85,0.4317,0.5531,0.4494,0.7954,0.4411,4055,0.7331

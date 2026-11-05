@@ -1,0 +1,99 @@
+{
+  "experiment_name": "Multi-Dataset Repeated LOPO-CV with TrAdaBoost Target Adaptation",
+  "version": "1.0.0",
+  "datasets": [
+    {
+      "key": "flakeflagger",
+      "display_name": "FlakeFlagger (24 Projects)",
+      "file_path": "data/cleaned_flakeflagger_features.csv",
+      "project_col": "project_clean"
+    },
+    {
+      "key": "idoft",
+      "display_name": "IDoFT (17 Projects)",
+      "file_path": "data/cleaned_idoft_features.csv",
+      "project_col": "project_clean"
+    }
+  ],
+  "repetitions": {
+    "n_seeds": 5,
+    "seeds": [42, 100, 2024, 777, 999]
+  },
+  "treatments": [
+    {
+      "id": "T1_Baseline_Zero_Shot",
+      "name": "Baseline Zero-Shot (0% Target)",
+      "type": "cross_project_zero_shot",
+      "target_train_ratio": 0.0,
+      "description": "Cross-Project LOPO-CV murni tanpa melihat data berlabel dari target (Zero-Shot)."
+    },
+    {
+      "id": "T2_TrAdaBoost_25",
+      "name": "TrAdaBoost 25%",
+      "type": "tradaboost_transfer",
+      "target_train_ratio": 0.25,
+      "description": "TrAdaBoost instance-based transfer learning dengan 25% data berlabel target (diuji pada 75% sisa target)."
+    },
+    {
+      "id": "T3_TrAdaBoost_50",
+      "name": "TrAdaBoost 50%",
+      "type": "tradaboost_transfer",
+      "target_train_ratio": 0.50,
+      "description": "TrAdaBoost instance-based transfer learning dengan 50% data berlabel target (diuji pada 50% sisa target)."
+    },
+    {
+      "id": "T4_TrAdaBoost_75",
+      "name": "TrAdaBoost 75%",
+      "type": "tradaboost_transfer",
+      "target_train_ratio": 0.75,
+      "description": "TrAdaBoost instance-based transfer learning dengan 75% data berlabel target (diuji pada 25% sisa target)."
+    },
+    {
+      "id": "T5_Within_Project",
+      "name": "Within-Project (Upper Bound)",
+      "type": "within_project_cv",
+      "target_train_ratio": 1.0,
+      "description": "5-Fold Stratified Cross-Validation Within-Project sebagai batas atas performa teoritis."
+    }
+  ],
+  "classifiers": [
+    {
+      "id": "M1_RandomForest",
+      "name": "Random Forest CPU",
+      "params": {
+        "n_estimators": 100,
+        "class_weight": "balanced",
+        "n_jobs": -1
+      }
+    },
+    {
+      "id": "M2_XGBoost",
+      "name": "XGBoost GPU",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 6,
+        "tree_method": "hist",
+        "device": "cuda",
+        "scale_pos_weight": "auto"
+      }
+    }
+  ],
+  "tradaboost_config": {
+    "n_estimators": 20,
+    "base_estimator": "DecisionTreeClassifier(max_depth=4)",
+    "use_second_half": true
+  },
+  "preprocessing": {
+    "scaler": "MinMaxScaler",
+    "resampler": "RandomUnderSampler"
+  },
+  "metrics": [
+    "f1_score",
+    "recall_score",
+    "precision_score",
+    "pr_auc",
+    "roc_auc",
+    "mcc",
+    "balanced_accuracy"
+  ]
+}

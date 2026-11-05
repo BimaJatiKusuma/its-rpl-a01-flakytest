@@ -1,0 +1,13 @@
+dataset,treatment,unweighted_macro_f1,active_macro_f1,flaky_weighted_f1,global_micro_f1,global_micro_recall,global_micro_precision,n_projects_total,n_projects_active,total_flaky_evaluated
+flakeflagger,Baseline_Zero_Shot_RF,0.1769,0.1846,0.3751,0.1637,0.5201,0.0971,24,23,811
+flakeflagger,Baseline_Zero_Shot_XGB,0.1505,0.157,0.325,0.1395,0.4917,0.0813,24,23,811
+flakeflagger,TrAdaBoost_25,0.281,0.2932,0.5878,0.5747,0.6056,0.5468,24,23,811
+flakeflagger,TrAdaBoost_50,0.3474,0.3625,0.6372,0.6338,0.6635,0.6065,24,23,811
+flakeflagger,TrAdaBoost_75,0.3773,0.3937,0.649,0.6155,0.6811,0.5615,24,23,811
+flakeflagger,Within_Project,0.4487,0.4682,0.7331,0.7495,0.7351,0.7644,24,23,811
+idoft,Baseline_Zero_Shot_RF,0.0475,0.0621,0.1046,0.0326,0.2061,0.0177,17,13,264
+idoft,Baseline_Zero_Shot_XGB,0.0574,0.0751,0.1446,0.0368,0.2818,0.0197,17,13,264
+idoft,TrAdaBoost_25,0.1719,0.2248,0.4475,0.4133,0.4248,0.4023,17,13,264
+idoft,TrAdaBoost_50,0.2136,0.2793,0.5081,0.4933,0.5069,0.4803,17,13,264
+idoft,TrAdaBoost_75,0.2085,0.2726,0.5367,0.5184,0.5773,0.4704,17,13,264
+idoft,Within_Project,0.3046,0.3983,0.6273,0.6462,0.6129,0.6833,17,13,264

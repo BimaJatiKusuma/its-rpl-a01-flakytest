@@ -1,0 +1,11 @@
+dataset,metric,baseline,comparison,mean_baseline,mean_comparison,mean_difference,wilcoxon_w,p_value,is_significant_p05,cliffs_delta,cliffs_magnitude
+flakeflagger,f1_score,Baseline_Zero_Shot_RF,Baseline_Zero_Shot_XGB,0.1769,0.1505,-0.0264,44.0,0.02276874371892181,True,-0.0417,Negligible
+flakeflagger,f1_score,Baseline_Zero_Shot_RF,TrAdaBoost_25,0.1769,0.281,0.1041,26.0,0.0018657515196867558,True,0.2153,Small
+flakeflagger,f1_score,Baseline_Zero_Shot_RF,TrAdaBoost_50,0.1769,0.3474,0.1705,14.0,0.0004188680369191762,True,0.3438,Medium
+flakeflagger,f1_score,Baseline_Zero_Shot_RF,TrAdaBoost_75,0.1769,0.3773,0.2004,16.0,0.0005434218498942879,True,0.3889,Medium
+flakeflagger,f1_score,Baseline_Zero_Shot_RF,Within_Project,0.1769,0.4487,0.2718,10.0,0.00039023125084089363,True,0.3958,Medium
+idoft,f1_score,Baseline_Zero_Shot_RF,Baseline_Zero_Shot_XGB,0.0475,0.0574,0.0099,26.0,0.3078214719088427,False,0.0208,Negligible
+idoft,f1_score,Baseline_Zero_Shot_RF,TrAdaBoost_25,0.0475,0.1719,0.1244,6.0,0.009632975772588674,True,0.1592,Small
+idoft,f1_score,Baseline_Zero_Shot_RF,TrAdaBoost_50,0.0475,0.2136,0.1661,7.0,0.012063323418854825,True,0.128,Negligible
+idoft,f1_score,Baseline_Zero_Shot_RF,TrAdaBoost_75,0.0475,0.2085,0.1609,11.0,0.0280561241492436,True,0.0484,Negligible
+idoft,f1_score,Baseline_Zero_Shot_RF,Within_Project,0.0475,0.3046,0.2571,7.0,0.012063323418854825,True,0.1557,Small

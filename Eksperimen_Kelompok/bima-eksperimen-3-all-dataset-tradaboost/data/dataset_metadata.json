@@ -1,0 +1,58 @@
+{
+  "experiment_title": "Replikasi Eksperimen 3: Multi-Dataset Cross-Project Flaky Test Prediction with TrAdaBoost Target Adaptation",
+  "author": "Bima Jati Kusuma (Kelompok A01 - RPL A ITS)",
+  "reference_papers": [
+    "Alshammari et al. (ICSE 2021) - FlakeFlagger: Predicting Flakiness Without Rerunning Tests",
+    "Afeltra et al. (IEEE Access 2024) - A Large-Scale Empirical Investigation Into Cross-Project Flaky Test Prediction",
+    "Dai et al. (ICML 2007) - Boosting for Transfer Learning (TrAdaBoost)"
+  ],
+  "datasets": {
+    "flakeflagger": {
+      "name": "FlakeFlagger Cleaned Benchmark",
+      "source_file": "data/cleaned_flakeflagger_features.csv",
+      "total_instances": 22236,
+      "n_projects": 24,
+      "total_flaky": 811,
+      "flakiness_rate_pct": 3.65,
+      "projects": [
+        "achilles", "activiti", "alluxio", "ambari", "assertj-core", "commons-exec",
+        "commons-lang", "elastic-job-lite", "handlebars.java", "hbase", "hector",
+        "http-request", "httpcore", "incubator-dubbo", "jackrabbit-oak", "java-websocket",
+        "jimfs", "logback", "ninja", "okhttp", "orbit", "spring-boot", "undertow", "wildfly"
+      ]
+    },
+    "idoft": {
+      "name": "Illinois Dataset of Flaky Tests (IDoFT) Cleaned Benchmark",
+      "source_file": "data/cleaned_idoft_features.csv",
+      "total_instances": 12626,
+      "n_projects": 17,
+      "total_flaky": 264,
+      "flakiness_rate_pct": 2.09,
+      "projects": [
+        "achilles", "alluxio", "commons-exec", "commons-lang", "hbase", "hive",
+        "http-request", "jackrabbit-oak", "java-websocket", "logback", "ninja",
+        "okhttp", "orbit", "spring-boot", "systemml", "undertow", "wildfly"
+      ]
+    }
+  },
+  "predictive_features": [
+    "assertion-roulette", "conditional-test-logic", "eager-test", "fire-and-forget",
+    "indirect-testing", "mystery-guest", "resource-optimism", "test-run-war",
+    "testLength", "numAsserts", "numCoveredLines", "ExecutionTime",
+    "projectSourceLinesCovered", "projectSourceClassesCovered",
+    "hIndexModificationsPerCoveredLine_window5", "hIndexModificationsPerCoveredLine_window10",
+    "hIndexModificationsPerCoveredLine_window25", "hIndexModificationsPerCoveredLine_window50",
+    "hIndexModificationsPerCoveredLine_window75", "hIndexModificationsPerCoveredLine_window100",
+    "hIndexModificationsPerCoveredLine_window500", "hIndexModificationsPerCoveredLine_window10000",
+    "num_third_party_libs"
+  ],
+  "n_features": 23,
+  "treatments": [
+    "Baseline_Zero_Shot",
+    "TrAdaBoost_25",
+    "TrAdaBoost_50",
+    "TrAdaBoost_75",
+    "Within_Project"
+  ],
+  "seeds": [42, 100, 2024, 777, 999]
+}
