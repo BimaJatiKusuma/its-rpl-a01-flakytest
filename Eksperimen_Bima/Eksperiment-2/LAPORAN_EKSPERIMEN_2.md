@@ -28,7 +28,7 @@ Berbeda dengan Eksperimen 1 yang terbelah oleh manipulasi pembuangan data C1 (Ro
 
 ## 1. Desain Eksperimen & Matriks Faktorial 24 Pipelines
 
-Eksperimen 2 menggunakan dataset `Experiment_Ali/data/cleaned_test_features.csv` dengan membuang 5 kolom metadata identitas (`Unnamed: 0`, `test_name`, `project`, `testClassName`, `testMethodName`) dan menggunakan **23 fitur prediktif resmi** (8 Test Smell biner, 7 Metrik Eksekusi & Coverage numerik, 8 Code Churn H-Index numerik).
+Eksperimen 2 menggunakan dataset `data/cleaned_test_features.csv` (hasil prapemrosesan terimputasi, sebelumnya di `Experiment_Ali/data/cleaned_test_features.csv`) dengan membuang 5 kolom metadata identitas (`Unnamed: 0`, `test_name`, `project`, `testClassName`, `testMethodName`) dan menggunakan **23 fitur prediktif resmi** (8 Test Smell biner, 7 Metrik Eksekusi & Coverage numerik, 8 Code Churn H-Index numerik).
 
 ```
 Matriks Faktorial: 3 Scaling (S1, S2, S3) × 4 Imbalance (B1, B2, B3, B4) × 2 Classifiers (M1, M2) = 24 Pipelines

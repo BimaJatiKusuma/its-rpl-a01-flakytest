@@ -55,18 +55,25 @@ Eksperimen_Bima/Eksperiment-2/
 ├── README.md                                 # Dokumentasi ikhtisar & petunjuk eksekusi
 ├── PROMPT_EKSEKUSI_EKSPERIMEN_2.md          # Master prompt AI untuk eksekusi mandiri
 ├── RANCANGAN_PENELITIAN_EKSPERIMEN_2.md      # Dokumen akademik rancangan penelitian komprehensif
+├── LAPORAN_EKSPERIMEN_2.md                   # Laporan komprehensif hasil temuan empiris
 ├── configs/
 │   └── experiment_matrix.json                # Definisi parameter 24 konfigurasi pipeline
+├── data/
+│   ├── README.md                             # Dokumentasi dataset & metodologi imputasi
+│   └── cleaned_test_features.csv             # Dataset bersih (22.236 baris, 0 missing, 24 proyek utuh)
 ├── src/
 │   ├── __init__.py
 │   ├── check_gpu.py                          # Verifikasi GPU RTX 4050 & lingkungan ML
 │   ├── data_loader.py                        # Loader dataset cleaned_test_features.csv
+│   ├── generate_cleaned_dataset.py           # Script penghasil cleaned_test_features.csv mandiri
+│   ├── build_full_notebook.py                # Script pembuat notebook imputasi & EDA Phase 1
 │   ├── pipeline_builder.py                   # Generator pipeline scaler + sampler + classifier
 │   ├── lopo_runner.py                        # Engine eksekusi LOPO-CV 24 pipelines lintas 24 fold
 │   ├── statistical_tests.py                  # Uji signifikansi statistik Friedman & Nemenyi post-hoc CD
 │   └── visualizer.py                         # Pembuat boxplot faktor dan heatmap performa
 ├── notebooks/
-│   └── 01_run_main_24_pipelines.ipynb        # Jupyter Notebook interaktif eksekusi eksperimen
+│   ├── 00_eda_and_data_cleaning.ipynb        # Jupyter Notebook interaktif Phase 1 (Data Cleaning & EDA)
+│   └── 01_run_main_24_pipelines.ipynb        # Jupyter Notebook interaktif eksekusi eksperimen LOPO-CV
 └── results/
     ├── raw_predictions/                      # CSV log metrik per fold proyek target
     ├── summary_metrics_24_pipelines.csv      # Ringkasan rata-rata, standar deviasi, dan median
@@ -89,12 +96,18 @@ Eksperimen_Bima/Eksperiment-2/
      .\.venv\Scripts\activate.bat
      ```
 
-2. **Verifikasi Ketersediaan GPU & Pustaka ML**:
+2. **(Opsional) Pembuatan Ulang Dataset Bersih Terimputasi**:
+   Dataset `data/cleaned_test_features.csv` telah tersedia secara lokal. Jika ingin mereproduksi atau menginspeksi proses pembersihan dari dataset mentah:
+   ```powershell
+   & ".\.venv\Scripts\python.exe" Eksperimen_Bima/Eksperiment-2/src/generate_cleaned_dataset.py
+   ```
+
+3. **Verifikasi Ketersediaan GPU & Pustaka ML**:
    ```powershell
    & ".\.venv\Scripts\python.exe" Eksperimen_Bima/Eksperiment-2/src/check_gpu.py
    ```
 
-3. **Jalankan Pipeline Eksperimen**:
+4. **Jalankan Pipeline Eksperimen**:
    - Melalui skrip Python runner:
      ```powershell
      & ".\.venv\Scripts\python.exe" Eksperimen_Bima/Eksperiment-2/src/lopo_runner.py
@@ -102,7 +115,7 @@ Eksperimen_Bima/Eksperiment-2/
    - Atau melalui Jupyter Notebook:
      Buka [`notebooks/01_run_main_24_pipelines.ipynb`](notebooks/01_run_main_24_pipelines.ipynb) dan pilih kernel **Python (.venv)**.
 
-4. **Uji Statistik & Visualisasi**:
+5. **Uji Statistik & Visualisasi**:
    ```powershell
    & ".\.venv\Scripts\python.exe" Eksperimen_Bima/Eksperiment-2/src/statistical_tests.py
    & ".\.venv\Scripts\python.exe" Eksperimen_Bima/Eksperiment-2/src/visualizer.py

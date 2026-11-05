@@ -23,8 +23,15 @@ Repositori ini berisi implementasi teknis dan eksekusi empiris dari **Rencana Pe
 Eksperimen_Bima/Eksperimen-1/
 ├── README.md                                 # Dokumentasi ikhtisar & petunjuk eksekusi
 ├── PROMPT_EKSEKUSI_EKSPERIMEN_1.md          # Master prompt komprehensif untuk memulai riset
+├── LAPORAN_EKSPERIMEN_1.md                   # Laporan komprehensif hasil temuan empiris
+├── requirements.txt                          # Dependensi paket Python yang dibutuhkan
 ├── configs/
 │   └── experiment_matrix.json                # Definisi parameter 48 konfigurasi pipeline
+├── data/
+│   ├── README.md                             # Dokumentasi kamus data & strategi C1/C2
+│   ├── test_features.csv                     # Dataset utama FlakeFlagger (22.236 baris, 29 kolom)
+│   ├── test_results.csv                      # Data eksekusi rerun 10.000x per test case
+│   └── Project_Info.csv                      # Metadata 24 repositori Java open-source
 ├── src/
 │   ├── __init__.py
 │   ├── check_gpu.py                          # Verifikasi GPU RTX 4050 & CUDA

@@ -62,6 +62,9 @@ def resolve_data_path(custom_path: str = None) -> Path:
         return Path(custom_path)
     
     candidates = [
+        Path(__file__).resolve().parent.parent / "data" / "test_features.csv",
+        Path("data/test_features.csv"),
+        Path("../data/test_features.csv"),
         Path("test_features.csv"),
         Path("../../test_features.csv"),
         Path("../test_features.csv"),
@@ -69,7 +72,7 @@ def resolve_data_path(custom_path: str = None) -> Path:
     ]
     for c in candidates:
         if c.exists():
-            return c
+            return c.resolve()
     raise FileNotFoundError("test_features.csv tidak ditemukan di direktori yang diperiksa.")
 
 

@@ -1,9 +1,10 @@
 {
   "experiment_name": "Eksperimen-1_Main_Research_Plan",
   "dataset": {
-    "feature_file": "../../test_features.csv",
-    "result_file": "../../test_results.csv",
-    "project_info": "../../Project_Info.csv"
+    "feature_file": "data/test_features.csv",
+    "result_file": "data/test_results.csv",
+    "project_info": "data/Project_Info.csv",
+    "fallback_feature_file": "../../test_features.csv"
   },
   "hardware": {
     "gpu_target": "NVIDIA GeForce RTX 4050 Laptop GPU",

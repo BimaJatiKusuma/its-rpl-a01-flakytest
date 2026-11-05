@@ -64,6 +64,10 @@ def resolve_cleaned_data_path(custom_path: str = None) -> Path:
         return Path(custom_path)
 
     candidates = [
+        Path(__file__).resolve().parent.parent / "data" / "cleaned_test_features.csv",
+        Path("data/cleaned_test_features.csv"),
+        Path("../data/cleaned_test_features.csv"),
+        Path("cleaned_test_features.csv"),
         Path("Experiment_Ali/data/cleaned_test_features.csv"),
         Path("../../Experiment_Ali/data/cleaned_test_features.csv"),
         Path("../Experiment_Ali/data/cleaned_test_features.csv"),
