@@ -137,3 +137,32 @@ def build_classifier(
             )
     else:
         raise ValueError(f"Model type '{model_type}' tidak dikenali. Pilih M1 atau M2.")
+
+
+def get_pipeline_specs() -> list:
+    """
+    Menghasilkan definisi seluruh 48 kombinasi pipeline faktorial:
+    2 Data Cleaning (C1, C2) x 3 Scaling (S1, S2, S3) x 4 Imbalance (B1, B2, B3, B4) x 2 Models (M1, M2) = 48 Pipelines.
+    """
+    cleanings = ["C1", "C2"]
+    scalers = ["S1", "S2", "S3"]
+    imbalances = ["B1", "B2", "B3", "B4"]
+    models = ["M1", "M2"]
+
+    pipelines = []
+    pid = 1
+    for c in cleanings:
+        for s in scalers:
+            for b in imbalances:
+                for m in models:
+                    p_code = f"P{pid:02d}_{c}_{s}_{b}_{m}"
+                    pipelines.append({
+                        "pipeline_id": p_code,
+                        "pipeline_number": pid,
+                        "cleaning": c,
+                        "scaling": s,
+                        "imbalance": b,
+                        "model": m,
+                    })
+                    pid += 1
+    return pipelines

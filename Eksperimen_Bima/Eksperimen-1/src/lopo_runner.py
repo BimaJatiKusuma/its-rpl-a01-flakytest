@@ -98,7 +98,8 @@ def run_pipeline_lopo(
     imbalance_type: str,
     model_type: str,
     output_dir: Path,
-    use_gpu: bool = True
+    use_gpu: bool = True,
+    random_state: int = 42
 ) -> pd.DataFrame:
     """
     Mengeksekusi 1 pipeline melewati seluruh iterasi LOPO-CV (Leave-One-Project-Out).
@@ -106,7 +107,7 @@ def run_pipeline_lopo(
     df, features, projects = load_dataset(cleaning_type)
     fold_results = []
 
-    print(f"\n[START] [{pipeline_id}] {cleaning_type}_{scaling_type}_{imbalance_type}_{model_type} ({len(projects)} proyek)...")
+    print(f"\n[START] [{pipeline_id}] {cleaning_type}_{scaling_type}_{imbalance_type}_{model_type} (Seed: {random_state}, {len(projects)} proyek)...")
     start_time = time.time()
 
     for proj in projects:
@@ -129,7 +130,7 @@ def run_pipeline_lopo(
 
         # 2. Imbalance Handling (HANYA pada X_train)
         X_train_final, y_train_final = apply_resampling(
-            X_train_scaled, y_train, imbalance_type
+            X_train_scaled, y_train, imbalance_type, random_state=random_state
         )
 
         # 3. Hitung bobot kelas untuk B4
@@ -144,7 +145,8 @@ def run_pipeline_lopo(
             model_type=model_type,
             imbalance_type=imbalance_type,
             use_gpu=use_gpu,
-            scale_pos_weight_val=pos_weight
+            scale_pos_weight_val=pos_weight,
+            random_state=random_state
         )
 
         clf.fit(X_train_final, y_train_final)

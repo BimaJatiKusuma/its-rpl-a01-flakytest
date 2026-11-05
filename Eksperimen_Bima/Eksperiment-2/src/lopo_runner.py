@@ -99,7 +99,8 @@ def run_pipeline_lopo(
     features: List[str],
     projects: List[str],
     pipe_spec: Dict[str, Any],
-    use_gpu: bool = True
+    use_gpu: bool = True,
+    random_state: int = 42
 ) -> pd.DataFrame:
     """
     Mengeksekusi 1 konfigurasi pipeline pada seluruh lipatan 24 proyek (LOPO-CV).
@@ -131,10 +132,12 @@ def run_pipeline_lopo(
         X_test_scaled = scaler.transform(X_test_raw)
 
         # 3. Resampling Ketimpangan Kelas (HANYA pada train)
-        X_train_res, y_train_res = apply_resampling(X_train_scaled, y_train_raw, b_type)
+        X_train_res, y_train_res = apply_resampling(
+            X_train_scaled, y_train_raw, b_type, random_state=random_state
+        )
 
         # 4. Inisialisasi Model
-        clf = build_classifier(m_type, b_type, use_gpu=use_gpu)
+        clf = build_classifier(m_type, b_type, use_gpu=use_gpu, random_state=random_state)
 
         # Penyesuaian khusus XGBoost jika B4 (ClassWeight / Cost-Sensitive)
         if (m_type == "M2" or "XGB" in m_type) and (b_type == "B4"):
