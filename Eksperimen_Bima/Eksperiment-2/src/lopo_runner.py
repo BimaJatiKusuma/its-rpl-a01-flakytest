@@ -100,7 +100,9 @@ def run_pipeline_lopo(
     projects: List[str],
     pipe_spec: Dict[str, Any],
     use_gpu: bool = True,
-    random_state: int = 42
+    random_state: int = 42,
+    pipe_idx: int = 1,
+    total_pipes: int = 24
 ) -> pd.DataFrame:
     """
     Mengeksekusi 1 konfigurasi pipeline pada seluruh lipatan 24 proyek (LOPO-CV).
@@ -111,8 +113,10 @@ def run_pipeline_lopo(
     m_type = pipe_spec["model"]
 
     fold_results = []
+    start_time = time.time()
 
-    for target_proj in projects:
+    for fold_idx, target_proj in enumerate(projects, start=1):
+        fold_start = time.time()
         # 1. Isolasi Train ($N-1$ proyek) dan Test ($1$ target proyek)
         train_mask = df["project"] != target_proj
         test_mask = df["project"] == target_proj
@@ -165,8 +169,20 @@ def run_pipeline_lopo(
         metrics["Model"] = m_type
         metrics["Target_Project"] = target_proj
         fold_results.append(metrics)
+        fold_elapsed = time.time() - fold_start
 
-    return pd.DataFrame(fold_results)
+        # Cetak status live per-fold ke terminal (seperti fold1 P1/P24)
+        print(
+            f"  ↳ [{pipe_id} ({pipe_idx:02d}/{total_pipes:02d})] [Fold {fold_idx:02d}/{len(projects):02d}: {target_proj:<16}] "
+            f"Flaky: {metrics['Flaky_in_Test']:3d} | F1: {metrics['F1']:.4f} | Rec: {metrics['Recall']:.4f} | Prec: {metrics['Precision']:.4f} ({fold_elapsed:.2f}s)"
+        )
+
+    elapsed = time.time() - start_time
+    df_res = pd.DataFrame(fold_results)
+    m_f1 = df_res["F1"].mean()
+    m_prauc = df_res["PR_AUC"].mean()
+    print(f"[DONE] Selesai [{pipe_id} ({pipe_idx:02d}/{total_pipes:02d})] {len(projects)} Folds ({elapsed:.2f}s) | Mean F1: {m_f1:.4f} | Mean PR-AUC: {m_prauc:.4f}")
+    return df_res
 
 
 def run_all_24_pipelines(
@@ -207,7 +223,9 @@ def run_all_24_pipelines(
         print(f"[{idx:02d}/{len(pipelines):02d}] Menjalankan {p_id} ... ", end="", flush=True)
 
         try:
-            df_folds = run_pipeline_lopo(df, features, projects, pipe, use_gpu=use_gpu)
+            df_folds = run_pipeline_lopo(
+                df, features, projects, pipe, use_gpu=use_gpu, pipe_idx=idx, total_pipes=len(pipelines)
+            )
             all_folds_list.append(df_folds)
 
             # Simpan log prediksi mentah per fold

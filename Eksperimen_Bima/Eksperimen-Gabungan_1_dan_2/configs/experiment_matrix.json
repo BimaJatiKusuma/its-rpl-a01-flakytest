@@ -1,0 +1,604 @@
+{
+  "experiment_name": "Eksperimen_Gabungan_1_dan_2",
+  "total_pipelines": 72,
+  "factors": {
+    "cleaning": {
+      "C1": "Row-Level Drop",
+      "C2": "Project-Level Drop",
+      "C3": "Group-Aware Median Imputation"
+    },
+    "scaling": {
+      "S1": "StandardScaler",
+      "S2": "MinMaxScaler",
+      "S3": "RobustScaler"
+    },
+    "imbalance": {
+      "B1": "Baseline",
+      "B2": "SMOTE",
+      "B3": "Random Under-Sampling",
+      "B4": "Cost-Sensitive / ClassWeight"
+    },
+    "classifier": {
+      "M1": "Random Forest",
+      "M2": "XGBoost GPU"
+    }
+  },
+  "pipelines": [
+    {
+      "pipeline_id": "P01_C1_S1_B1_M1",
+      "pipeline_number": 1,
+      "cleaning": "C1",
+      "scaling": "S1",
+      "imbalance": "B1",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P02_C1_S1_B1_M2",
+      "pipeline_number": 2,
+      "cleaning": "C1",
+      "scaling": "S1",
+      "imbalance": "B1",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P03_C1_S1_B2_M1",
+      "pipeline_number": 3,
+      "cleaning": "C1",
+      "scaling": "S1",
+      "imbalance": "B2",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P04_C1_S1_B2_M2",
+      "pipeline_number": 4,
+      "cleaning": "C1",
+      "scaling": "S1",
+      "imbalance": "B2",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P05_C1_S1_B3_M1",
+      "pipeline_number": 5,
+      "cleaning": "C1",
+      "scaling": "S1",
+      "imbalance": "B3",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P06_C1_S1_B3_M2",
+      "pipeline_number": 6,
+      "cleaning": "C1",
+      "scaling": "S1",
+      "imbalance": "B3",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P07_C1_S1_B4_M1",
+      "pipeline_number": 7,
+      "cleaning": "C1",
+      "scaling": "S1",
+      "imbalance": "B4",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P08_C1_S1_B4_M2",
+      "pipeline_number": 8,
+      "cleaning": "C1",
+      "scaling": "S1",
+      "imbalance": "B4",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P09_C1_S2_B1_M1",
+      "pipeline_number": 9,
+      "cleaning": "C1",
+      "scaling": "S2",
+      "imbalance": "B1",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P10_C1_S2_B1_M2",
+      "pipeline_number": 10,
+      "cleaning": "C1",
+      "scaling": "S2",
+      "imbalance": "B1",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P11_C1_S2_B2_M1",
+      "pipeline_number": 11,
+      "cleaning": "C1",
+      "scaling": "S2",
+      "imbalance": "B2",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P12_C1_S2_B2_M2",
+      "pipeline_number": 12,
+      "cleaning": "C1",
+      "scaling": "S2",
+      "imbalance": "B2",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P13_C1_S2_B3_M1",
+      "pipeline_number": 13,
+      "cleaning": "C1",
+      "scaling": "S2",
+      "imbalance": "B3",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P14_C1_S2_B3_M2",
+      "pipeline_number": 14,
+      "cleaning": "C1",
+      "scaling": "S2",
+      "imbalance": "B3",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P15_C1_S2_B4_M1",
+      "pipeline_number": 15,
+      "cleaning": "C1",
+      "scaling": "S2",
+      "imbalance": "B4",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P16_C1_S2_B4_M2",
+      "pipeline_number": 16,
+      "cleaning": "C1",
+      "scaling": "S2",
+      "imbalance": "B4",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P17_C1_S3_B1_M1",
+      "pipeline_number": 17,
+      "cleaning": "C1",
+      "scaling": "S3",
+      "imbalance": "B1",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P18_C1_S3_B1_M2",
+      "pipeline_number": 18,
+      "cleaning": "C1",
+      "scaling": "S3",
+      "imbalance": "B1",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P19_C1_S3_B2_M1",
+      "pipeline_number": 19,
+      "cleaning": "C1",
+      "scaling": "S3",
+      "imbalance": "B2",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P20_C1_S3_B2_M2",
+      "pipeline_number": 20,
+      "cleaning": "C1",
+      "scaling": "S3",
+      "imbalance": "B2",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P21_C1_S3_B3_M1",
+      "pipeline_number": 21,
+      "cleaning": "C1",
+      "scaling": "S3",
+      "imbalance": "B3",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P22_C1_S3_B3_M2",
+      "pipeline_number": 22,
+      "cleaning": "C1",
+      "scaling": "S3",
+      "imbalance": "B3",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P23_C1_S3_B4_M1",
+      "pipeline_number": 23,
+      "cleaning": "C1",
+      "scaling": "S3",
+      "imbalance": "B4",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P24_C1_S3_B4_M2",
+      "pipeline_number": 24,
+      "cleaning": "C1",
+      "scaling": "S3",
+      "imbalance": "B4",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P25_C2_S1_B1_M1",
+      "pipeline_number": 25,
+      "cleaning": "C2",
+      "scaling": "S1",
+      "imbalance": "B1",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P26_C2_S1_B1_M2",
+      "pipeline_number": 26,
+      "cleaning": "C2",
+      "scaling": "S1",
+      "imbalance": "B1",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P27_C2_S1_B2_M1",
+      "pipeline_number": 27,
+      "cleaning": "C2",
+      "scaling": "S1",
+      "imbalance": "B2",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P28_C2_S1_B2_M2",
+      "pipeline_number": 28,
+      "cleaning": "C2",
+      "scaling": "S1",
+      "imbalance": "B2",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P29_C2_S1_B3_M1",
+      "pipeline_number": 29,
+      "cleaning": "C2",
+      "scaling": "S1",
+      "imbalance": "B3",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P30_C2_S1_B3_M2",
+      "pipeline_number": 30,
+      "cleaning": "C2",
+      "scaling": "S1",
+      "imbalance": "B3",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P31_C2_S1_B4_M1",
+      "pipeline_number": 31,
+      "cleaning": "C2",
+      "scaling": "S1",
+      "imbalance": "B4",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P32_C2_S1_B4_M2",
+      "pipeline_number": 32,
+      "cleaning": "C2",
+      "scaling": "S1",
+      "imbalance": "B4",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P33_C2_S2_B1_M1",
+      "pipeline_number": 33,
+      "cleaning": "C2",
+      "scaling": "S2",
+      "imbalance": "B1",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P34_C2_S2_B1_M2",
+      "pipeline_number": 34,
+      "cleaning": "C2",
+      "scaling": "S2",
+      "imbalance": "B1",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P35_C2_S2_B2_M1",
+      "pipeline_number": 35,
+      "cleaning": "C2",
+      "scaling": "S2",
+      "imbalance": "B2",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P36_C2_S2_B2_M2",
+      "pipeline_number": 36,
+      "cleaning": "C2",
+      "scaling": "S2",
+      "imbalance": "B2",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P37_C2_S2_B3_M1",
+      "pipeline_number": 37,
+      "cleaning": "C2",
+      "scaling": "S2",
+      "imbalance": "B3",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P38_C2_S2_B3_M2",
+      "pipeline_number": 38,
+      "cleaning": "C2",
+      "scaling": "S2",
+      "imbalance": "B3",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P39_C2_S2_B4_M1",
+      "pipeline_number": 39,
+      "cleaning": "C2",
+      "scaling": "S2",
+      "imbalance": "B4",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P40_C2_S2_B4_M2",
+      "pipeline_number": 40,
+      "cleaning": "C2",
+      "scaling": "S2",
+      "imbalance": "B4",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P41_C2_S3_B1_M1",
+      "pipeline_number": 41,
+      "cleaning": "C2",
+      "scaling": "S3",
+      "imbalance": "B1",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P42_C2_S3_B1_M2",
+      "pipeline_number": 42,
+      "cleaning": "C2",
+      "scaling": "S3",
+      "imbalance": "B1",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P43_C2_S3_B2_M1",
+      "pipeline_number": 43,
+      "cleaning": "C2",
+      "scaling": "S3",
+      "imbalance": "B2",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P44_C2_S3_B2_M2",
+      "pipeline_number": 44,
+      "cleaning": "C2",
+      "scaling": "S3",
+      "imbalance": "B2",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P45_C2_S3_B3_M1",
+      "pipeline_number": 45,
+      "cleaning": "C2",
+      "scaling": "S3",
+      "imbalance": "B3",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P46_C2_S3_B3_M2",
+      "pipeline_number": 46,
+      "cleaning": "C2",
+      "scaling": "S3",
+      "imbalance": "B3",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P47_C2_S3_B4_M1",
+      "pipeline_number": 47,
+      "cleaning": "C2",
+      "scaling": "S3",
+      "imbalance": "B4",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P48_C2_S3_B4_M2",
+      "pipeline_number": 48,
+      "cleaning": "C2",
+      "scaling": "S3",
+      "imbalance": "B4",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P49_C3_S1_B1_M1",
+      "pipeline_number": 49,
+      "cleaning": "C3",
+      "scaling": "S1",
+      "imbalance": "B1",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P50_C3_S1_B1_M2",
+      "pipeline_number": 50,
+      "cleaning": "C3",
+      "scaling": "S1",
+      "imbalance": "B1",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P51_C3_S1_B2_M1",
+      "pipeline_number": 51,
+      "cleaning": "C3",
+      "scaling": "S1",
+      "imbalance": "B2",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P52_C3_S1_B2_M2",
+      "pipeline_number": 52,
+      "cleaning": "C3",
+      "scaling": "S1",
+      "imbalance": "B2",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P53_C3_S1_B3_M1",
+      "pipeline_number": 53,
+      "cleaning": "C3",
+      "scaling": "S1",
+      "imbalance": "B3",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P54_C3_S1_B3_M2",
+      "pipeline_number": 54,
+      "cleaning": "C3",
+      "scaling": "S1",
+      "imbalance": "B3",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P55_C3_S1_B4_M1",
+      "pipeline_number": 55,
+      "cleaning": "C3",
+      "scaling": "S1",
+      "imbalance": "B4",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P56_C3_S1_B4_M2",
+      "pipeline_number": 56,
+      "cleaning": "C3",
+      "scaling": "S1",
+      "imbalance": "B4",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P57_C3_S2_B1_M1",
+      "pipeline_number": 57,
+      "cleaning": "C3",
+      "scaling": "S2",
+      "imbalance": "B1",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P58_C3_S2_B1_M2",
+      "pipeline_number": 58,
+      "cleaning": "C3",
+      "scaling": "S2",
+      "imbalance": "B1",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P59_C3_S2_B2_M1",
+      "pipeline_number": 59,
+      "cleaning": "C3",
+      "scaling": "S2",
+      "imbalance": "B2",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P60_C3_S2_B2_M2",
+      "pipeline_number": 60,
+      "cleaning": "C3",
+      "scaling": "S2",
+      "imbalance": "B2",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P61_C3_S2_B3_M1",
+      "pipeline_number": 61,
+      "cleaning": "C3",
+      "scaling": "S2",
+      "imbalance": "B3",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P62_C3_S2_B3_M2",
+      "pipeline_number": 62,
+      "cleaning": "C3",
+      "scaling": "S2",
+      "imbalance": "B3",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P63_C3_S2_B4_M1",
+      "pipeline_number": 63,
+      "cleaning": "C3",
+      "scaling": "S2",
+      "imbalance": "B4",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P64_C3_S2_B4_M2",
+      "pipeline_number": 64,
+      "cleaning": "C3",
+      "scaling": "S2",
+      "imbalance": "B4",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P65_C3_S3_B1_M1",
+      "pipeline_number": 65,
+      "cleaning": "C3",
+      "scaling": "S3",
+      "imbalance": "B1",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P66_C3_S3_B1_M2",
+      "pipeline_number": 66,
+      "cleaning": "C3",
+      "scaling": "S3",
+      "imbalance": "B1",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P67_C3_S3_B2_M1",
+      "pipeline_number": 67,
+      "cleaning": "C3",
+      "scaling": "S3",
+      "imbalance": "B2",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P68_C3_S3_B2_M2",
+      "pipeline_number": 68,
+      "cleaning": "C3",
+      "scaling": "S3",
+      "imbalance": "B2",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P69_C3_S3_B3_M1",
+      "pipeline_number": 69,
+      "cleaning": "C3",
+      "scaling": "S3",
+      "imbalance": "B3",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P70_C3_S3_B3_M2",
+      "pipeline_number": 70,
+      "cleaning": "C3",
+      "scaling": "S3",
+      "imbalance": "B3",
+      "model": "M2"
+    },
+    {
+      "pipeline_id": "P71_C3_S3_B4_M1",
+      "pipeline_number": 71,
+      "cleaning": "C3",
+      "scaling": "S3",
+      "imbalance": "B4",
+      "model": "M1"
+    },
+    {
+      "pipeline_id": "P72_C3_S3_B4_M2",
+      "pipeline_number": 72,
+      "cleaning": "C3",
+      "scaling": "S3",
+      "imbalance": "B4",
+      "model": "M2"
+    }
+  ]
+}

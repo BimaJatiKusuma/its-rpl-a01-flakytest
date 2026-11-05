@@ -99,7 +99,9 @@ def run_pipeline_lopo(
     model_type: str,
     output_dir: Path,
     use_gpu: bool = True,
-    random_state: int = 42
+    random_state: int = 42,
+    pipe_idx: int = 1,
+    total_pipes: int = 48
 ) -> pd.DataFrame:
     """
     Mengeksekusi 1 pipeline melewati seluruh iterasi LOPO-CV (Leave-One-Project-Out).
@@ -107,10 +109,11 @@ def run_pipeline_lopo(
     df, features, projects = load_dataset(cleaning_type)
     fold_results = []
 
-    print(f"\n[START] [{pipeline_id}] {cleaning_type}_{scaling_type}_{imbalance_type}_{model_type} (Seed: {random_state}, {len(projects)} proyek)...")
+    print(f"\n[START] [{pipeline_id} ({pipe_idx:02d}/{total_pipes:02d})] {cleaning_type}_{scaling_type}_{imbalance_type}_{model_type} (Seed: {random_state}, {len(projects)} proyek)...")
     start_time = time.time()
 
-    for proj in projects:
+    for fold_idx, proj in enumerate(projects, start=1):
+        fold_start = time.time()
         train_mask = df["project"] != proj
         test_mask = df["project"] == proj
 
@@ -169,11 +172,19 @@ def run_pipeline_lopo(
         metrics["Target_Project"] = proj
 
         fold_results.append(metrics)
+        fold_elapsed = time.time() - fold_start
+
+        # Cetak progres real-time per fold ke terminal
+        print(
+            f"  ↳ [{pipeline_id} ({pipe_idx:02d}/{total_pipes:02d})] [Fold {fold_idx:02d}/{len(projects):02d}: {proj:<16}] "
+            f"Flaky: {metrics['Flaky_in_Test']:3d} | F1: {metrics['F1']:.4f} | Rec: {metrics['Recall']:.4f} | Prec: {metrics['Precision']:.4f} ({fold_elapsed:.2f}s)"
+        )
 
     elapsed = time.time() - start_time
-    print(f"[DONE] Selesai [{pipeline_id}] dalam {elapsed:.2f} detik.")
-
     df_res = pd.DataFrame(fold_results)
+    m_f1 = df_res["F1"].mean()
+    m_prauc = df_res["PR_AUC"].mean()
+    print(f"[DONE] Selesai [{pipeline_id} ({pipe_idx:02d}/{total_pipes:02d})] {len(projects)} Folds ({elapsed:.2f}s) | Mean F1: {m_f1:.4f} | Mean PR-AUC: {m_prauc:.4f}")
 
     # Simpan hasil per fold langsung ke results/raw_predictions/
     raw_dir = Path(output_dir) / "raw_predictions"
@@ -217,7 +228,9 @@ def run_all_48_pipelines(output_dir: str = "../results", use_gpu: bool = True):
                         imbalance_type=b,
                         model_type=m,
                         output_dir=out_path,
-                        use_gpu=use_gpu
+                        use_gpu=use_gpu,
+                        pipe_idx=pipe_count,
+                        total_pipes=total_pipes
                     )
                     all_fold_dfs.append(df_pipe)
 

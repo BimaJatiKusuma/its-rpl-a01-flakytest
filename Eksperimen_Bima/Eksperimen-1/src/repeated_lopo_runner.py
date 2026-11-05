@@ -108,6 +108,9 @@ def run_single_pipeline_fold(
     pipe_spec: Dict[str, Any],
     seed: int,
     rep_idx: int,
+    total_reps: int = 10,
+    pipe_idx: int = 1,
+    total_pipes: int = 48,
     use_gpu: bool = True
 ) -> pd.DataFrame:
     """
@@ -122,7 +125,8 @@ def run_single_pipeline_fold(
 
     fold_results = []
 
-    for target_proj in projects:
+    for fold_idx, target_proj in enumerate(projects, start=1):
+        fold_start = time.time()
         # 1. Isolasi Train ($N-1$ proyek) dan Test ($1$ target proyek)
         train_mask = df["project"] != target_proj
         test_mask = df["project"] == target_proj
@@ -185,6 +189,14 @@ def run_single_pipeline_fold(
         metrics["Seed"] = seed
         metrics["Repetition"] = rep_idx
         fold_results.append(metrics)
+        fold_elapsed = time.time() - fold_start
+
+        # Cetak status live per-fold ke terminal (seperti fold1 P1/P48)
+        print(
+            f"    ↳ [Rep {rep_idx:02d}/{total_reps:02d}] [{pipe_id} ({pipe_idx:02d}/{total_pipes:02d})] "
+            f"[Fold {fold_idx:02d}/{len(projects):02d}: {target_proj:<16}] "
+            f"Flaky: {metrics['Flaky_in_Test']:3d} | F1: {metrics['F1']:.4f} | Rec: {metrics['Recall']:.4f} | Prec: {metrics['Precision']:.4f} ({fold_elapsed:.2f}s)"
+        )
 
     return pd.DataFrame(fold_results)
 
@@ -254,6 +266,9 @@ def run_repeated_lopo_experiments(
                 pipe_spec=pipe_spec,
                 seed=seed,
                 rep_idx=rep_idx,
+                total_reps=len(seeds),
+                pipe_idx=p_idx,
+                total_pipes=len(pipelines),
                 use_gpu=use_gpu
             )
             p_elapsed = time.time() - p_start
