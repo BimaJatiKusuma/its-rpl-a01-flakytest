@@ -23,9 +23,9 @@ The benchmark matrix systematically crosses 4 independent experimental factors (
 ```
 Eksperimen-Gabungan_1_dan_2/
 ├── README.md                                 # Primary repository overview & execution guide
+├── RESULTS_AND_DISCUSSION.md                 # Publication-grade academic paper section (English)
 ├── COMBINED_EXPERIMENT_REPORT.md             # Comprehensive empirical synthesis report (scientific English)
 ├── RESEARCH_DESIGN.md                        # Academic research design and methodology specification
-├── LAPORAN_EKSPERIMEN_GABUNGAN.md            # Laporan komprehensif temuan eksperimen (Bahasa Indonesia)
 ├── RANCANGAN_PENELITIAN_GABUNGAN.md          # Dokumen perancangan metodologi riset (Bahasa Indonesia)
 ├── requirements.txt                          # Python package dependencies
 ├── configs/

@@ -3,7 +3,7 @@
 
 **Research Group**: Group A01 — Advanced Software Engineering (Master of Computer Science, Institut Teknologi Sepuluh Nopember)  
 **Primary Design Document**: [`RESEARCH_DESIGN.md`](RESEARCH_DESIGN.md) (Indonesian reference: [`RANCANGAN_PENELITIAN_GABUNGAN.md`](RANCANGAN_PENELITIAN_GABUNGAN.md))  
-**Indonesian Canonical Report**: [`LAPORAN_EKSPERIMEN_GABUNGAN.md`](LAPORAN_EKSPERIMEN_GABUNGAN.md)  
+**Publication Paper Section**: [`RESULTS_AND_DISCUSSION.md`](RESULTS_AND_DISCUSSION.md)  
 **Benchmark Dataset**: FlakeFlagger Curated Benchmark (`test_features.csv` & `cleaned_test_features.csv`, 24 open-source Java projects, 22,236 test cases, 811 flaky tests)  
 **Hardware Acceleration**: NVIDIA GeForce RTX 4050 Laptop GPU (6GB VRAM, CUDA 13.4) & Multi-threaded CPU Parallelization  
 **Validation Protocols**: Leave-One-Project-Out Cross-Validation (LOPO-CV, Zero Data Leakage) & 10x Repeated Stochastic Trials (16,080 Total Model Folds)  
@@ -426,7 +426,7 @@ Total executed evaluation folds: $10 \times 1,608 = \mathbf{16,080 \text{ folds}
 
 ## 7. Artifact References & Visualization Cross-Links
 
-- **Indonesian Canonical Report**: [`LAPORAN_EKSPERIMEN_GABUNGAN.md`](LAPORAN_EKSPERIMEN_GABUNGAN.md)
+- **Publication Paper Section**: [`RESULTS_AND_DISCUSSION.md`](RESULTS_AND_DISCUSSION.md)
 - **Methodological Research Design**: [`RESEARCH_DESIGN.md`](RESEARCH_DESIGN.md) & [`RANCANGAN_PENELITIAN_GABUNGAN.md`](RANCANGAN_PENELITIAN_GABUNGAN.md)
 - **Unified 72-Pipeline Summary**: [`results/summary_metrics_72_pipelines.csv`](results/summary_metrics_72_pipelines.csv)
 - **10-Seed Stability Analysis**: [`results/consistency_stability_analysis.csv`](results/consistency_stability_analysis.csv)
