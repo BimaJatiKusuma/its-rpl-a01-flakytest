@@ -76,8 +76,8 @@ Total 10x Repeated Evaluations: $10 \times 1,608 = \mathbf{16,080 \text{ Model F
 
 ## 5. Formal Research Questions (RQs)
 
-- **RQ1 (Tri-Paradigm Data Cleaning)**: What is the relative empirical impact of Group-Aware Median Imputation (C3) compared to Row Discarding (C1) and Project Discarding (C2) on detection accuracy and enterprise project preservation?
-- **RQ2 (Feature Scaling Invariance)**: Which feature scaling technique (S1, S2, or S3) provides optimal resilience against cross-project domain shift across all three cleaning strategies?
-- **RQ3 (Class Imbalance Mitigation)**: Does the supremacy of Random Under-Sampling (B3: RUS) hold consistently across all three cleaning strategies and across 10 stochastic repetitions?
-- **RQ4 (Model Architecture & Hardware Acceleration)**: How do Random Forest (M1) and GPU-accelerated XGBoost (M2) compare in detection quality, stability, and runtime efficiency across 16,080 model folds?
-- **RQ5 (Stochastic Stability & Reproducibility)**: How robust and reproducible are the top-ranked pipeline configurations when evaluated across multiple stochastic random seeds?
+The study addresses four primary research questions:
+- **RQ1 (Data Cleaning & Flaky Sample Preservation)**: Examines whether row-level cleaning (C1) or project-level cleaning (C2) better preserves flaky samples and supports cross-project generalization, benchmarked against contextual group-aware median imputation (C3).
+- **RQ2 (Feature Scaling & Distribution Shift)**: Investigates which scaling method (S1: StandardScaler, S2: MinMaxScaler, or S3: RobustScaler) best mitigates cross-project distribution shift.
+- **RQ3 (Class Imbalance & Precision-Recall Trade-Off)**: Evaluates which imbalance treatment (B1: Baseline, B2: SMOTE, B3: Random Under-Sampling, or B4: Cost-Sensitive / ClassWeight) provides the most useful precision-recall trade-off.
+- **RQ4 (Model Families & Cross-Project Transferability)**: Compares the transferability of different model families (M1: Random Forest [Bagging CPU] vs. M2: XGBoost [Gradient Boosting CUDA GPU]) across unseen projects.

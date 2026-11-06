@@ -79,8 +79,8 @@ Total 10x Repeated Evaluations: $10 \times 1,608 = \mathbf{16,080 \text{ Model F
 
 ## 5. Formal Research Questions (RQs)
 
-- **RQ1 (Tri-Paradigm Data Cleaning)**: What is the relative empirical impact of Group-Aware Median Imputation (C3) compared to Row Discarding (C1) and Project Discarding (C2) on detection accuracy and enterprise project preservation?
-- **RQ2 (Feature Scaling Invariance)**: Which feature scaling technique (S1, S2, or S3) provides optimal resilience against cross-project domain shift across all three cleaning strategies?
-- **RQ3 (Class Imbalance Mitigation)**: Does the supremacy of Random Under-Sampling (B3: RUS) hold consistently across all three cleaning strategies and across 10 stochastic repetitions?
-- **RQ4 (Model Architecture & Hardware Acceleration)**: How do Random Forest (M1) and GPU-accelerated XGBoost (M2) compare in detection quality, stability, and runtime efficiency across 16,080 model folds?
-- **RQ5 (Stochastic Stability & Reproducibility)**: How robust and reproducible are the top-ranked pipeline configurations when evaluated across multiple stochastic random seeds?
+Penelitian ini menjawab empat Research Questions (RQ) utama:
+- **RQ1 (Pembersihan Data & Preservasi Sampel Flaky)**: Meneliti apakah pembersihan level-baris (*row-level cleaning* / C1) atau level-proyek (*project-level cleaning* / C2) yang lebih baik dalam melestarikan sampel flaky dan mendukung generalisasi, dengan komparasi terhadap imputasi median grup kontekstual (C3).
+- **RQ2 (Penskalaan Fitur & Mitigasi Distribution Shift)**: Menyelidiki metode penskalaan mana (S1: StandardScaler, S2: MinMaxScaler, atau S3: RobustScaler) yang paling efektif memitigasi pergeseran distribusi lintas proyek (*cross-project distribution shift*).
+- **RQ3 (Penanganan Ketimpangan Kelas & Trade-Off Precision-Recall)**: Mengevaluasi perlakuan ketimpangan kelas mana (B1: Baseline, B2: SMOTE, B3: Random Under-Sampling, atau B4: ClassWeight) yang memberikan *trade-off* precision-recall paling berguna secara operasional.
+- **RQ4 (Famili Model & Transferabilitas Lintas Proyek)**: Membandingkan kemampuan transfer (*transferability*) dari famili model yang berbeda (M1: Random Forest [Bagging CPU] vs. M2: XGBoost [Gradient Boosting CUDA GPU]) pada proyek unseen baru.

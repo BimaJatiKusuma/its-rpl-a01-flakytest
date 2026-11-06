@@ -89,7 +89,7 @@ The experiment evaluates three distinct data preparation paradigms:
    - Result: **21,963 test cases** across all **24 projects** (808 flaky tests, 3 flaky tests lost).
 2. **Paradigm C2 — Project-Level Discarding (Experiment 1)**:
    - Any project containing at least one missing value is entirely discarded (`wildfly`, `logback`, `spring-boot`, `wro4j`, `handlebars.java`).
-   - Result: **16,458 test cases** across **19 projects** ($-20.8\%$ projects, $-24.8\%$ test cases). **Fatal flaw**: Discards 222 ground-truth flaky tests (including 163 from `spring-boot`).
+   - Result: **16,458 test cases** across **19 projects** ($-20.8\%$ projects, $-25.98\%$ test cases). **Fatal flaw**: Discards 225 ground-truth flaky tests (including 163 from `spring-boot`).
 3. **Paradigm C3 — Group-Aware Median Imputation (Experiment 2)**:
    - Missing features are imputed using the **median of the respective project group** ($X_{i, j} \leftarrow \text{median}(\{X_{k, j} \mid \text{project}_k = \text{project}_i\})$), followed by probabilistic fallback sampling if an entire project group is null.
    - Result: **22,236 test cases** across **24 projects** (0 missing values, **100% data preservation**, 811 intact flaky tests).
