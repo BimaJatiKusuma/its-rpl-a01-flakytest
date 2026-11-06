@@ -45,8 +45,7 @@ Eksperimen-Gabungan_1_dan_2/
 │   ├── statistical_tests.py                  # Uji signifikansi statistik Friedman, Nemenyi & Kruskal-Wallis
 │   └── visualizer.py                         # Pembuat boxplot faktor, tri-paradigma, dan heatmap
 ├── notebooks/
-│   ├── 01_run_unified_72_pipelines.ipynb     # Jupyter Notebook interaktif eksekusi single-run 72 pipelines
-│   └── 02_run_repeated_lopo_10x_and_consistency.ipynb # Jupyter Notebook interaktif eksekusi 10x perulangan
+│   └── 01_run_repeated_lopo_10x_and_consistency.ipynb # Jupyter Notebook all-in-one eksekusi 10x, konsistensi, & visualisasi
 └── results/
     ├── raw_predictions/                      # Log prediksi mentah per fold & per seed
     ├── per_seed_summaries/                   # Ringkasan agregat per seed
