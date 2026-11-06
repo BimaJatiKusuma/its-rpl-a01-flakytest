@@ -1,11 +1,11 @@
 """
-Modul Analisis Konsistensi & Stabilitas Empiris untuk Eksperimen Gabungan 1 & 2.
-Mengevaluasi variansi performa model lintas repetisi (hingga 10 random seeds).
-Menghitung:
-- Mean, Standar Deviasi, Coefficient of Variation (CV = Std / Mean * 100)
-- 95% Confidence Interval (CI)
-- Kestabilan per faktor eksperimen (Cleaning C1/C2/C3, Scaling S1-S3, Imbalance B1-B4, Model M1-M2)
-- Komparasi Langsung Tri-Paradigma Data Cleaning (C1 vs C2 vs C3)
+Empirical Consistency & Stability Analysis Module for Combined Experiment 1 & 2.
+Evaluates model performance variance across stochastic repetitions (up to 10 random seeds).
+Calculates:
+- Sample Mean, Standard Deviation, and Coefficient of Variation (CV = Std / Mean * 100)
+- 95% Confidence Intervals (CI95)
+- Factorial stability breakdowns (Cleaning C1/C2/C3, Scaling S1-S3, Imbalance B1-B4, Model M1-M2)
+- Direct Tri-Paradigm Data Cleaning Benchmark Comparison (C1 vs. C2 vs. C3)
 """
 
 import sys
@@ -26,7 +26,7 @@ def analyze_pipeline_consistency(
     output_dir: Optional[str] = None
 ) -> pd.DataFrame:
     """
-    Menganalisis konsistensi dan stabilitas dari seluruh 72 pipeline lintas perulangan seed.
+    Analyzes consistency and stochastic stability across all 72 pipelines across repeated seed runs.
     """
     if all_runs_csv is None:
         all_runs_csv = str(Path(__file__).resolve().parent.parent / "results" / "all_seed_pipeline_runs.csv")
@@ -37,13 +37,13 @@ def analyze_pipeline_consistency(
     out_path.mkdir(parents=True, exist_ok=True)
 
     if not Path(all_runs_csv).exists():
-        raise FileNotFoundError(f"File log perulangan tidak ditemukan: {all_runs_csv}")
+        raise FileNotFoundError(f"Repeated runs log file was not found: {all_runs_csv}")
 
     df_runs = pd.read_csv(all_runs_csv)
     num_seeds_total = df_runs["Seed"].nunique()
 
     print("\n" + "=" * 85)
-    print(f"📊 ANALISIS KONSISTENSI & STABILITAS EKSPERIMEN GABUNGAN LINTAS {num_seeds_total}x PERULANGAN SEED")
+    print(f"📊 EMPIRICAL STABILITY & CONSISTENCY ANALYSIS ACROSS {num_seeds_total}x STOCHASTIC SEEDS")
     print("=" * 85)
 
     metrics_to_analyze = [
@@ -94,9 +94,9 @@ def analyze_pipeline_consistency(
 
     out_file = out_path / "consistency_stability_analysis.csv"
     df_cons.to_csv(out_file, index=False)
-    print(f"[OK] Analisis konsistensi pipeline tersimpan di: {out_file}")
+    print(f"[OK] Pipeline consistency analysis saved to: {out_file}")
 
-    # Analisis Kestabilan per Faktor (Cleaning, Scaling, Imbalance, Model)
+    # Factorial Stability Breakdowns (Cleaning, Scaling, Imbalance, Model)
     factors = ["Cleaning", "Scaling", "Imbalance", "Model"]
     for f in factors:
         if f in df_runs.columns:
@@ -110,11 +110,11 @@ def analyze_pipeline_consistency(
             f_agg["CV_F1_%"] = (f_agg["Mean_F1_STD"] / f_agg["Mean_F1_MEAN"]) * 100.0
             factor_file = out_path / f"consistency_factor_{f.lower()}.csv"
             f_agg.reset_index().to_csv(factor_file, index=False)
-            print(f"  📁 Ringkasan faktor '{f}' tersimpan di: {factor_file.name}")
+            print(f"  📁 Factor summary '{f}' saved to: {factor_file.name}")
 
-    # Komparasi Tri-Paradigma Data Cleaning (C1 vs C2 vs C3)
+    # Direct Tri-Paradigm Data Cleaning Benchmark Comparison (C1 vs. C2 vs. C3)
     print("\n" + "-" * 85)
-    print("🔬 KOMPARASI TRI-PARADIGMA DATA CLEANING (C1 vs C2 vs C3):")
+    print("🔬 TRI-PARADIGM DATA CLEANING BENCHMARK COMPARISON (C1 vs. C2 vs. C3):")
     print("-" * 85)
     if "Cleaning" in df_runs.columns:
         c_comp = df_runs.groupby("Cleaning").agg({
@@ -128,7 +128,7 @@ def analyze_pipeline_consistency(
         print(c_comp.reset_index().to_string(index=False))
 
     print("\n" + "-" * 85)
-    print("🏆 TOP 10 PIPELINE PALING KONSISTEN & BERPERFORMA TINGGI:")
+    print("🏆 TOP 10 CONSISTENT & HIGHEST-PERFORMING PIPELINES:")
     print("-" * 85)
     top_cols = ["Pipeline_ID", "Cleaning", "Scaling", "Imbalance", "Model",
                 "Mean_F1_Mean", "Mean_F1_Std", "Mean_F1_CV_%", "Mean_Recall_Mean", "Mean_PR_AUC_Mean"]
@@ -141,9 +141,9 @@ def analyze_pipeline_consistency(
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="Analisis Konsistensi Eksperimen Gabungan 1 & 2")
-    parser.add_argument("--runs_csv", type=str, default=None, help="Path ke all_seed_pipeline_runs.csv")
-    parser.add_argument("--output_dir", type=str, default=None, help="Direktori output")
+    parser = argparse.ArgumentParser(description="Consistency & Empirical Stability Analyzer for Combined Experiment 1 & 2")
+    parser.add_argument("--runs_csv", type=str, default=None, help="Path to all_seed_pipeline_runs.csv")
+    parser.add_argument("--output_dir", type=str, default=None, help="Target results directory")
     args = parser.parse_args()
 
     analyze_pipeline_consistency(all_runs_csv=args.runs_csv, output_dir=args.output_dir)

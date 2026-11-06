@@ -1,13 +1,13 @@
 """
-Engine Eksekusi Leave-One-Project-Out Cross-Validation (LOPO-CV) untuk 72 Pipelines.
-Mengevaluasi secara terpadu seluruh kombinasi faktorial:
-3 Data Cleaning (C1/C2/C3) x 3 Scaling (S1/S2/S3) x 4 Imbalance (B1/B2/B3/B4) x 2 Models (M1/M2).
+Leave-One-Project-Out Cross-Validation (LOPO-CV) Execution Engine for 72 Factorial Machine Learning Pipelines.
+Evaluates all factorial combinations in a single evaluation run:
+3 Data Cleaning (C1/C2/C3) x 3 Feature Scaling (S1/S2/S3) x 4 Imbalance Handling (B1/B2/B3/B4) x 2 Models (M1/M2).
 
-Total Evaluasi (Single Run):
-- C1: 24 Pipelines x 24 Folds = 576 Folds
-- C2: 24 Pipelines x 19 Folds = 456 Folds
-- C3: 24 Pipelines x 24 Folds = 576 Folds
-Total: 1.608 Model Folds.
+Single-Run Evaluation Scope:
+- C1: 24 Pipelines x 24 Folds = 576 Model Folds
+- C2: 24 Pipelines x 19 Folds = 456 Model Folds
+- C3: 24 Pipelines x 24 Folds = 576 Model Folds
+Total: 1,608 Model Folds.
 """
 
 import os
@@ -22,7 +22,7 @@ import pandas as pd
 
 warnings.filterwarnings("ignore")
 
-# Konfigurasi UTF-8 encoding untuk Windows console
+# Configure UTF-8 encoding for Windows console environments
 if hasattr(sys.stdout, "reconfigure"):
     try:
         sys.stdout.reconfigure(encoding="utf-8")
@@ -51,7 +51,7 @@ def evaluate_single_fold(
     y_preds: np.ndarray
 ) -> Dict[str, float]:
     """
-    Menghitung metrik performa dengan penanganan kasus khusus proyek tanpa flaky test (seperti jimfs).
+    Computes classification performance metrics with special-case handling for zero-flaky projects (e.g., jimfs).
     """
     n_flaky = int(np.sum(y_test == 1))
     n_non_flaky = int(np.sum(y_test == 0))
@@ -61,7 +61,7 @@ def evaluate_single_fold(
         cm = confusion_matrix(y_test, y_preds, labels=[0, 1])
         tn, fp, fn, tp = cm.ravel()
 
-    # Kasus khusus jimfs: jika tidak ada flaky test di target test fold (n_flaky == 0)
+    # Special handling for projects with zero ground-truth flaky tests
     if n_flaky == 0:
         pr_auc = np.nan
         roc_auc = np.nan
@@ -113,7 +113,7 @@ def run_pipeline_lopo(
     total_pipes: int = 72
 ) -> pd.DataFrame:
     """
-    Mengeksekusi 1 konfigurasi pipeline melewati seluruh iterasi LOPO-CV (Leave-One-Project-Out).
+    Executes a single pipeline configuration across all Leave-One-Project-Out (LOPO-CV) folds.
     """
     pipe_id = pipe_spec["pipeline_id"]
     c_type = pipe_spec["cleaning"]
@@ -126,7 +126,7 @@ def run_pipeline_lopo(
 
     for fold_idx, proj in enumerate(projects, start=1):
         fold_start = time.time()
-        # 1. Isolasi Train ($N-1$ proyek) dan Test ($1$ target proyek)
+        # 1. Isolate Training ($N-1$ projects) and Unseen Testing ($1$ project) sets
         train_mask = df["project"] != proj
         test_mask = df["project"] == proj
 
@@ -139,67 +139,62 @@ def run_pipeline_lopo(
         X_test_raw = df_test[features].values.astype(np.float32)
         y_test = df_test["flaky"].values.astype(int)
 
-        # 2. Data Scaling (Zero Leakage: fit HANYA pada train fold)
+        # 2. Fit Scaler ONLY on Training fold (Zero Data Leakage guarantee)
         scaler = get_scaler(s_type)
         X_train_scaled = scaler.fit_transform(X_train_raw)
         X_test_scaled = scaler.transform(X_test_raw)
 
-        # 3. Resampling Ketimpangan Kelas (HANYA pada train fold)
+        # 3. Apply Resampling ONLY on Training fold
         X_train_res, y_train_res = apply_resampling(
             X_train_scaled, y_train_raw, b_type, random_state=random_state
         )
 
-        # 4. Hitung bobot kelas untuk B4
-        pos_weight = 1.0
-        n_pos = np.sum(y_train_res == 1)
-        n_neg = np.sum(y_train_res == 0)
-        if n_pos > 0:
-            pos_weight = float(n_neg / n_pos)
+        # 4. Compute class imbalance ratio for cost-sensitive loss weighting (B4)
+        n_pos = int(np.sum(y_train_res == 1))
+        n_neg = int(np.sum(y_train_res == 0))
+        spw = (n_neg / n_pos) if (n_pos > 0 and n_neg > 0) else 1.0
 
-        # 5. Inisialisasi Model
+        # 5. Build and Train Model
         clf = build_classifier(
             model_type=m_type,
             imbalance_type=b_type,
             use_gpu=use_gpu,
-            scale_pos_weight_val=pos_weight,
+            scale_pos_weight_val=spw,
             random_state=random_state
         )
-
-        # 6. Pelatihan Model
         clf.fit(X_train_res, y_train_res)
 
-        # 7. Prediksi pada fold uji unseen
+        # 6. Evaluate Model on Unseen Target Project Fold
         if hasattr(clf, "predict_proba"):
-            probs = clf.predict_proba(X_test_scaled)
-            y_probs = probs[:, 1] if probs.shape[1] > 1 else probs[:, 0]
+            probs = clf.predict_proba(X_test_scaled)[:, 1]
         else:
-            y_probs = clf.predict(X_test_scaled).astype(float)
+            probs = clf.predict(X_test_scaled)
 
-        y_preds = (y_probs >= 0.5).astype(int)
-
-        # 8. Evaluasi Metrik
-        metrics = evaluate_single_fold(y_test, y_probs, y_preds)
-        metrics["Pipeline_ID"] = pipe_id
-        metrics["Cleaning"] = c_type
-        metrics["Scaling"] = s_type
-        metrics["Imbalance"] = b_type
-        metrics["Model"] = m_type
-        metrics["Target_Project"] = proj
-
-        fold_results.append(metrics)
+        preds = (probs >= 0.5).astype(int)
+        metrics = evaluate_single_fold(y_test, probs, preds)
         fold_elapsed = time.time() - fold_start
 
-        # Cetak progres real-time per fold ke terminal (seperti fold1 P1/P72)
-        print(
-            f"  ↳ [{pipe_id} ({pipe_idx:02d}/{total_pipes:02d})] [Fold {fold_idx:02d}/{len(projects):02d}: {proj:<16}] "
-            f"Flaky: {metrics['Flaky_in_Test']:3d} | F1: {metrics['F1']:.4f} | Rec: {metrics['Recall']:.4f} | Prec: {metrics['Precision']:.4f} ({fold_elapsed:.2f}s)"
-        )
+        fold_record = {
+            "Pipeline_ID": pipe_id,
+            "Fold": fold_idx,
+            "Target_Project": proj,
+            "Cleaning": c_type,
+            "Scaling": s_type,
+            "Imbalance": b_type,
+            "Model": m_type,
+            "Train_Size": len(y_train_res),
+            "Train_Flaky": n_pos,
+            "Train_NonFlaky": n_neg,
+            "Fold_Time_Sec": fold_elapsed,
+            **metrics
+        }
+        fold_results.append(fold_record)
 
     df_res = pd.DataFrame(fold_results)
     elapsed = time.time() - start_time
     m_f1 = df_res["F1"].mean()
     m_prauc = df_res["PR_AUC"].mean()
-    print(f"[DONE] Selesai [{pipe_id} ({pipe_idx:02d}/{total_pipes:02d})] {len(projects)} Folds ({elapsed:.2f}s) | Mean F1: {m_f1:.4f} | Mean PR-AUC: {m_prauc:.4f}")
+    print(f"[DONE] Finished [{pipe_id} ({pipe_idx:02d}/{total_pipes:02d})] {len(projects)} Folds ({elapsed:.2f}s) | Mean F1: {m_f1:.4f} | Mean PR-AUC: {m_prauc:.4f}")
 
     if output_dir:
         raw_dir = Path(output_dir) / "raw_predictions"
@@ -216,7 +211,7 @@ def run_all_72_pipelines(
     quick_test: bool = False
 ) -> pd.DataFrame:
     """
-    Eksekutor terpadu seluruh 72 matriks pipeline eksperimen gabungan.
+    Unified batch executor across all 72 factorial machine learning pipelines.
     """
     start_total_time = time.time()
     if output_dir is None:
@@ -225,18 +220,24 @@ def run_all_72_pipelines(
     out_path.mkdir(parents=True, exist_ok=True)
 
     print("\n" + "=" * 85)
-    print("🚀 MEMULAI EKSEKUSI EKSPERIMEN GABUNGAN 1 & 2 (72 FACTORIAL PIPELINES)")
+    print("🚀 UNIFIED CROSS-PROJECT FLAKY TEST PREDICTION BENCHMARK — 72 FACTORIAL PIPELINES")
     print("=" * 85)
 
-    pipelines = get_pipeline_specs()
-
-    # Cache dataset C1, C2, dan C3
+    # Cache dataset C1, C2, and C3
     data_cache = {}
     for c_strat in ["C1", "C2", "C3"]:
         df_c, feat_c, proj_c = load_dataset(cleaning_strategy=c_strat)
         if quick_test:
-            proj_c = proj_c[:2]
+            proj_c = proj_c[:2]  # Smoke test on first 2 projects
         data_cache[c_strat] = (df_c, feat_c, proj_c)
+
+    pipelines = get_pipeline_specs()
+    if quick_test:
+        # Sample 1 pipeline from each cleaning strategy for quick smoke verification
+        pipelines = [pipelines[0], pipelines[24], pipelines[48]]
+
+    print(f"Total Pipelines to Evaluate: {len(pipelines)}")
+    print(f"Output Directory            : {out_path.resolve()}\n")
 
     summary_rows = []
 
@@ -298,19 +299,19 @@ def run_all_72_pipelines(
     summary_file = out_path / "summary_metrics_72_pipelines.csv"
     df_summary.to_csv(summary_file, index=False)
 
-    print(f"\n[ALL DONE] Eksekusi selesai dalam {(time.time() - start_total_time) / 60:.2f} menit!")
-    print(f"Ringkasan tersimpan ke: {summary_file}")
+    print(f"\n[ALL DONE] Benchmark execution completed in {(time.time() - start_total_time) / 60:.2f} minutes!")
+    print(f"Summary metrics saved to: {summary_file}")
     return df_summary
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="LOPO-CV Runner Eksperimen Gabungan 1 & 2")
-    parser.add_argument("--pipeline_id", type=str, default=None, help="Jalankan 1 pipeline tertentu")
-    parser.add_argument("--cleaning", type=str, default=None, choices=["C1", "C2", "C3"])
-    parser.add_argument("--all", action="store_true", help="Jalankan seluruh 72 pipelines")
-    parser.add_argument("--quick_test", action="store_true", help="Smoke test cepat (2 folds)")
-    parser.add_argument("--no_gpu", action="store_true", help="Nonaktifkan GPU")
-    parser.add_argument("--output_dir", type=str, default=None)
+    parser = argparse.ArgumentParser(description="Unified LOPO-CV Benchmark Runner for Combined Experiment 1 & 2")
+    parser.add_argument("--pipeline_id", type=str, default=None, help="Execute a specific pipeline ID (e.g., P61_C3_S2_B3_M1)")
+    parser.add_argument("--cleaning", type=str, default=None, choices=["C1", "C2", "C3"], help="Execute only pipelines under a specific cleaning strategy")
+    parser.add_argument("--all", action="store_true", help="Execute all 72 factorial pipelines")
+    parser.add_argument("--quick_test", action="store_true", help="Quick smoke test verification (2 folds)")
+    parser.add_argument("--no_gpu", action="store_true", help="Disable GPU acceleration and run strictly on CPU")
+    parser.add_argument("--output_dir", type=str, default=None, help="Target results directory")
     args = parser.parse_args()
 
     default_out = Path(__file__).resolve().parent.parent / "results"
@@ -321,16 +322,16 @@ if __name__ == "__main__":
         print("[MODE] QUICK SMOKE TEST (2 folds)...")
         run_all_72_pipelines(output_dir=str(target_out), use_gpu=use_gpu_flag, quick_test=True)
     elif args.all or (args.pipeline_id is None and args.cleaning is None):
-        print("[MODE] Menjalankan seluruh 72 pipelines eksperimen gabungan...")
+        print("[MODE] Executing all 72 full factorial pipelines...")
         run_all_72_pipelines(output_dir=str(target_out), use_gpu=use_gpu_flag)
     elif args.pipeline_id:
         all_specs = get_pipeline_specs()
         matched = [p for p in all_specs if p["pipeline_id"].upper() == args.pipeline_id.upper()]
         if not matched:
-            print(f"[ERROR] Pipeline '{args.pipeline_id}' tidak ditemukan.")
+            print(f"[ERROR] Pipeline '{args.pipeline_id}' was not found in the matrix.")
             sys.exit(1)
         spec = matched[0]
         df_d, feat_d, proj_d = load_dataset(spec["cleaning"])
         df_p = run_pipeline_lopo(df_d, feat_d, proj_d, spec, output_dir=target_out, use_gpu=use_gpu_flag)
-        print("\nHASIL LOPO-CV:")
+        print("\nLOPO-CV EVALUATION RESULTS:")
         print(df_p[["Target_Project", "F1", "Recall", "Precision", "PR_AUC", "MCC"]].to_string(index=False))

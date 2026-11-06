@@ -1,5 +1,5 @@
 """
-Modul diagnostik GPU NVIDIA GeForce RTX 4050 & lingkungan ML untuk Eksperimen Gabungan 1 & 2.
+Hardware diagnostic module for NVIDIA GeForce RTX GPU acceleration and Python ML runtime environment.
 """
 
 import sys
@@ -8,10 +8,10 @@ import shutil
 
 def check_nvidia_smi():
     print("=" * 60)
-    print("1. PEMERIKSAAN DRIVER & GPU VIA NVIDIA-SMI")
+    print("1. HARDWARE & DRIVER DIAGNOSTICS VIA NVIDIA-SMI")
     print("=" * 60)
     if shutil.which("nvidia-smi") is None:
-        print("[WARNING] nvidia-smi tidak ditemukan di PATH sistem.")
+        print("[WARNING] 'nvidia-smi' executable was not found in the system PATH.")
         return
     try:
         res = subprocess.run(
@@ -20,13 +20,13 @@ def check_nvidia_smi():
             text=True,
             check=True
         )
-        print(f"[OK] GPU Terdeteksi: {res.stdout.strip()}")
+        print(f"[OK] Detected GPU: {res.stdout.strip()}")
     except Exception as e:
-        print(f"[ERROR] Gagal menjalankan nvidia-smi: {e}")
+        print(f"[ERROR] Failed to execute nvidia-smi: {e}")
 
 def check_python_environment():
     print("\n" + "=" * 60)
-    print("2. PEMERIKSAAN PYTHON INTERPRETER & PUSTAKA UTAMA")
+    print("2. PYTHON RUNTIME & DEPENDENCY VERIFICATION")
     print("=" * 60)
     print(f"Python Executable : {sys.executable}")
     print(f"Python Version    : {sys.version.split()[0]}")
@@ -35,14 +35,14 @@ def check_python_environment():
     for mod in modules:
         try:
             m = __import__(mod)
-            ver = getattr(m, "__version__", "Terpasang")
+            ver = getattr(m, "__version__", "Installed")
             print(f"[OK] {mod:<15}: v{ver}")
         except ImportError:
-            print(f"[MISSING] {mod:<11}: Belum terpasang!")
+            print(f"[MISSING] {mod:<11}: Not installed!")
 
 def check_xgboost_gpu():
     print("\n" + "=" * 60)
-    print("3. PEMERIKSAAN DUKUNGAN GPU DI XGBOOST")
+    print("3. XGBOOST CUDA GPU ACCELERATION CHECK")
     print("=" * 60)
     try:
         import xgboost as xgb
@@ -59,11 +59,11 @@ def check_xgboost_gpu():
         )
         clf.fit(X_dummy, y_dummy)
         preds = clf.predict_proba(X_dummy)
-        print("[OK] XGBoost GPU Acceleration (tree_method='hist', device='cuda') BERFUNGSI SEMPURNA!")
-        print(f"     Output dummy prediction shape: {preds.shape}")
+        print("[OK] XGBoost GPU Acceleration (tree_method='hist', device='cuda') is fully functional!")
+        print(f"     Dummy prediction probability output shape: {preds.shape}")
     except Exception as e:
-        print(f"[WARNING] XGBoost GPU gagal: {e}")
-        print("          Dapat beralih ke tree_method='hist' pada CPU jika diperlukan.")
+        print(f"[WARNING] XGBoost GPU acceleration check failed: {e}")
+        print("          Falling back to CPU tree_method='hist' if needed.")
 
 if __name__ == "__main__":
     check_nvidia_smi()

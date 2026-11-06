@@ -1,39 +1,40 @@
-# 📊 Direktori Data Eksperimen Gabungan 1 & 2
+# 📊 Data Repository: Combined Experiment 1 & 2
+## Tri-Paradigm Data Cleaning Benchmark & Feature Dictionary
 
-Direktori ini memadukan dataset dari **Eksperimen 1** (Raw Data dengan strategi pembuangan) dan **Eksperimen 2** (Cleaned Data dengan imputasi cerdas) untuk memungkinkan perbandingan komprehensif *3 Data Cleaning / Preprocessing Paradigms* dalam satu kerangka kerja validasi lintas proyek yang konsisten.
+This directory curates the empirical datasets synthesizing **Experiment 1** (raw FlakeFlagger data with sample omission strategies) and **Experiment 2** (contextual group-aware imputation) to enable rigorous, controlled evaluation of *3 Data Cleaning / Preprocessing Paradigms* under standardized cross-project validation.
 
 ---
 
-## 🗂️ Berkas Data
+## 🗂️ Dataset Inventory
 
-| Nama Berkas | Sumber | Baris | Proyek | Deskripsi |
+| Filename | Source / Provenance | Rows | Projects | Scientific Description |
 |---|---|:---:|:---:|---|
-| `test_features.csv` | Eksperimen 1 | 22.236 | 24 | Dataset mentah FlakeFlagger (memiliki 273 missing values pada 5 proyek Java). Digunakan untuk strategi **C1** dan **C2**. |
-| `cleaned_test_features.csv` | Eksperimen 2 | 22.236 | 24 | Dataset terimputasi bersih hasil *Group-Aware Per-Project Median & Probabilistic Imputation* (0 missing values, 811 flaky test utuh). Digunakan untuk strategi **C3**. |
-| `test_results.csv` | FlakeFlagger | 22.236 | 24 | Data riwayat eksekusi rerun 10.000x per test case untuk verifikasi flakiness ground truth. |
-| `Project_Info.csv` | FlakeFlagger | 24 | 24 | Metadata repositori Java (nama proyek, domain, total test case, rasio flaky). |
+| `test_features.csv` | Experiment 1 / FlakeFlagger | 22,236 | 24 | Raw FlakeFlagger feature matrix exhibiting 273 missing values across 5 Java repositories. Used to evaluate strategies **C1** and **C2**. |
+| `cleaned_test_features.csv` | Experiment 2 | 22,236 | 24 | Curated dataset processed via *Group-Aware Per-Project Median & Probabilistic Imputation* (0 missing values, 811 intact flaky tests). Used for strategy **C3**. |
+| `test_results.csv` | FlakeFlagger Benchmark | 22,236 | 24 | Historical execution telemetry across 10,000 reruns per test case for ground truth flakiness verification. |
+| `Project_Info.csv` | FlakeFlagger Benchmark | 24 | 24 | Repository metadata across 24 Java systems (repository slug, application domain, total test count, empirical flakiness rate). |
 
 ---
 
-## ⚙️ Tiga (3) Paradigma Data Cleaning yang Dibandingkan (C1, C2, C3)
+## ⚙️ Tri-Paradigm Data Cleaning Specifications (C1, C2, C3)
 
-1. **C1: Row-Level Drop (Eksperimen 1)**:
-   - Membuang 273 baris dengan missing value.
-   - Menyisakan **21.963 baris data** pada seluruh **24 proyek Java**.
-   - Populasi flaky: **808 flaky tests**.
-2. **C2: Project-Level Drop (Eksperimen 1)**:
-   - Membuang 5 proyek yang memiliki missing value (`wildfly`, `logback`, `spring-boot`, `wro4j`, `handlebars.java`).
-   - Menyisakan **16.458 baris data** pada **19 proyek Java**.
-   - Populasi flaky: **586 flaky tests** (222 flaky test terbuang, termasuk 163 dari `spring-boot`).
-3. **C3: Group-Aware Median Imputation (Eksperimen 2)**:
-   - Mengimputasi missing values berdasarkan nilai median pada grup proyek masing-masing.
-   - Mempertahankan **100% data**: **22.236 baris data** pada seluruh **24 proyek Java**.
-   - Populasi flaky: **811 flaky tests utuh** (tanpa data yang terbuang).
+1. **C1: Row-Level Discarding (Experiment 1)**:
+   - Discards all 273 rows containing missing values.
+   - Retains **21,963 test cases** across all **24 Java projects**.
+   - Flaky test population: **808 flaky tests**.
+2. **C2: Project-Level Discarding (Experiment 1)**:
+   - Discards the 5 projects containing missing values (`wildfly`, `logback`, `spring-boot`, `wro4j`, `handlebars.java`).
+   - Retains **16,458 test cases** across **19 Java projects** ($-20.8\%$ projects, $-24.8\%$ test cases).
+   - Flaky test population: **586 flaky tests** (222 flaky tests discarded, including 163 from `spring-boot`).
+3. **C3: Group-Aware Median Imputation (Experiment 2)**:
+   - Imputes missing feature values using the median value computed within each respective project group.
+   - Preserves **100% of the benchmark data**: **22,236 test cases** across all **24 Java projects**.
+   - Flaky test population: **811 flaky tests intact** with zero sample loss.
 
 ---
 
-## 🔍 23 Fitur Prediktif Resmi FlakeFlagger
+## 🔍 Canonical FlakeFlagger 23 Predictive Features Taxonomy
 
-- **8 Test Smells (Biner)**: `assertion-roulette`, `conditional-test-logic`, `eager-test`, `fire-and-forget`, `indirect-testing`, `mystery-guest`, `resource-optimism`, `test-run-war`.
-- **7 Execution & Coverage (Numerik)**: `testLength`, `numAsserts`, `numCoveredLines`, `ExecutionTime`, `projectSourceLinesCovered`, `projectSourceClassesCovered`, `num_third_party_libs`.
-- **8 Code Churn H-Index (Numerik)**: Jendela modifikasi per baris cakupan (`window5`, `window10`, `window25`, `window50`, `window75`, `window100`, `window500`, `window10000`).
+- **8 Test Smells (Binary)**: `assertion-roulette`, `conditional-test-logic`, `eager-test`, `fire-and-forget`, `indirect-testing`, `mystery-guest`, `resource-optimism`, `test-run-war`.
+- **7 Execution & Code Coverage Metrics (Continuous)**: `testLength`, `numAsserts`, `numCoveredLines`, `ExecutionTime`, `projectSourceLinesCovered`, `projectSourceClassesCovered`, `num_third_party_libs`.
+- **8 Code Churn H-Index Metrics (Continuous)**: Sliding modification windows per covered line (`window5`, `window10`, `window25`, `window50`, `window75`, `window100`, `window500`, `window10000`).

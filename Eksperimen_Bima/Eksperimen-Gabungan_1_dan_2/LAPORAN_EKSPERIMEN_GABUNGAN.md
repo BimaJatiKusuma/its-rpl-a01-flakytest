@@ -1,57 +1,59 @@
-# 📄 Laporan Sintesis Empiris: Eksperimen Gabungan 1 & 2
-## Analisis Komparatif Tri-Paradigma Data Cleaning pada 72 Factorial Pipelines
+# 📄 Empirical Synthesis Report: Combined Experiment 1 & 2
+## Comparative Benchmark of Tri-Paradigm Data Cleaning Across 72 Factorial Machine Learning Pipelines
 
-**Kelompok Peneliti**: Kelompok A01 — Rekayasa Perangkat Lunak A (Magister Teknik Informatika ITS)  
-**Dokumen Induk**: `Eksperimen_Bima/Eksperimen-Gabungan_1_dan_2/RANCANGAN_PENELITIAN_GABUNGAN.md`  
-**Dataset**: FlakeFlagger Dataset (`test_features.csv` & `cleaned_test_features.csv`, 24 proyek Java, 22.236 baris data)  
-**Metodologi**: Leave-One-Project-Out Cross-Validation (LOPO-CV, Zero Data Leakage) & Repeated LOPO-CV (10 Random Seeds)  
+> [!NOTE]
+> This document has been upgraded to publication-grade scientific English for international dissemination. The canonical English report is available at [`COMBINED_EXPERIMENT_REPORT.md`](COMBINED_EXPERIMENT_REPORT.md).
+
+**Research Group**: Group A01 — Advanced Software Engineering (Master of Computer Science, Institut Teknologi Sepuluh Nopember)  
+**Primary Design Document**: [`RESEARCH_DESIGN.md`](RESEARCH_DESIGN.md) (Indonesian reference: [`RANCANGAN_PENELITIAN_GABUNGAN.md`](RANCANGAN_PENELITIAN_GABUNGAN.md))  
+**Benchmark Dataset**: FlakeFlagger Curated Benchmark (`test_features.csv` & `cleaned_test_features.csv`, 24 open-source Java projects, 22,236 test cases)  
+**Evaluation Protocol**: Leave-One-Project-Out Cross-Validation (LOPO-CV, Zero Data Leakage) & Repeated LOPO-CV (10 Independent Stochastic Seeds)  
 
 ---
 
 ## Executive Summary
 
-Eksperimen Gabungan 1 & 2 menyatukan seluruh ruang parameter dari rangkaian eksperimen awal ke dalam **72 Konfigurasi Pipeline Faktorial Penuh** ($3 \text{ Cleaning} \times 3 \text{ Scaling} \times 4 \text{ Imbalance} \times 2 \text{ Classifiers}$). Penyatuan ini secara definitif menjawab perdebatan metodologis mengenai dampak pembuangan data (*data discarding*) vs imputasi nilai hilang cerdas (*group-aware median imputation*) pada prediksi *flaky test* lintas proyek (*Cross-Project Flaky Test Prediction*).
+The Combined Experiment 1 & 2 unifies the entire parameter design space from preliminary experimental iterations into a **Full Factorial 72-Pipeline Benchmark Matrix** ($3 \text{ Cleaning} \times 3 \text{ Feature Scaling} \times 4 \text{ Class Imbalance Handling} \times 2 \text{ Classifier Models}$). This unified design rigorously resolves the methodological debate concerning the trade-offs of sample discarding (*data omission*) versus intelligent contextual imputation (*group-aware median imputation*) within **Cross-Project Flaky Test Prediction (CP-FTP)**.
 
-### Ringkasan Temuan Utama:
-1. **Tri-Paradigma Cleaning (C1 vs C2 vs C3)**:  
-   - **C3 (Group-Aware Median Imputation)** adalah pemenang metodologis dan operasional mutlak. Pada 24 proyek yang sama, C3 melampaui C1 pada seluruh metrik: **Mean F1 naik +11,39%** (0.1631 $\rightarrow$ **0.1816**), **Precision naik +28,31%** (0.1588 $\rightarrow$ **0.2038**), dan mendeteksi **+37 True Positive flaky test lebih banyak** (428 $\rightarrow$ 465 TP).
-   - Angka metrik tinggi pada C2 (Project-Level Drop, F1 0.2271) terbukti merupakan **survivorship bias semata** akibat membuang proyek enterprise heterogen `spring-boot`. Model C3 terbukti berhasil menangkap **127 dari 163 flaky test pada `spring-boot` (Recall 77,91%)**, suatu kapabilitas yang hilang total pada model C2.
-2. **Supremasi Random Under-Sampling (B3: RUS)**:  
-   RUS mendominasi peringkat teratas di ketiga paradigma cleaning (C1, C2, C3). RUS melipatgandakan Mean F1 hingga 3-4x lipat dibanding Baseline B1 dan mendongkrak Recall hingga >43-48%. SMOTE (B2) terbukti gagal karena interpolasi sampel sintetis di domain sumber memperparah *domain shift*.
-3. **Penskalaan Fitur (S1 vs S2 vs S3)**:  
-   MinMaxScaler (S2) secara konsisten memberikan konvergensi paling stabil pada rentang bounded $[0, 1]$, memudahkan kuantisasi histogram gradient boosting dan meredam skewness ekstrem pada metrik perangkat lunak.
-4. **Model Klasifikasi (M1 vs M2)**:  
-   Random Forest (M1) mengamankan skor puncak individual (`P13_C1`, `P37_C2`, `P61_C3`), namun XGBoost GPU (M2) unggul secara signifikan pada rata-rata operasional agregat dengan kecepatan inferensi **1,56x lebih cepat** berkat akselerasi CUDA.
+### Key Empirical Findings:
+
+1. **Tri-Paradigm Cleaning Superiority (C3 vs. C1 & C2)**:  
+   - **C3 (Group-Aware Median Imputation)** emerges as the definitive operational and methodological standard. Evaluated across the identical 24 target projects, C3 consistently surpasses C1 across all primary performance dimensions: **Mean F1 increases by +11.39%** ($0.1631 \rightarrow \mathbf{0.1816}$), **Precision improves by +28.31%** ($0.1588 \rightarrow \mathbf{0.2038}$), and detects **+37 additional True Positive flaky tests** ($428 \rightarrow \mathbf{465}\text{ TP}$).
+   - The deceptively inflated performance of C2 (Project-Level Discarding, Mean F1 $0.2271$) is empirically demonstrated to be an artifact of **survivorship bias** caused by omitting the complex enterprise benchmark `spring-boot`. Pipeline C3 successfully identifies **127 of 163 flaky test cases within `spring-boot` (Recall: 77.91%)**, a mission-critical capability forfeited by C2.
+2. **Supremacy of Random Under-Sampling (B3: RUS)**:  
+   - Random Under-Sampling (RUS) decisively leads across all three cleaning paradigms (C1, C2, and C3). RUS increases Mean F1 by $3\times$ to $4\times$ over the unweighted Baseline (B1) and elevates detection Recall to $>43\% \text{--} 48\%$. Conversely, SMOTE (B2) exhibits degradation because synthetic minority interpolation within source feature spaces exacerbates cross-project domain divergence.
+3. **Feature Scaling Resilience (S2: MinMaxScaler)**:  
+   - MinMaxScaler (S2) provides the most consistent empirical convergence across bounded intervals $[0, 1]$, mitigating extreme skewness inherent in software churn and coverage metrics while facilitating histogram quantization for tree ensembles.
+4. **Model Architecture & Computational Efficiency (M1: RF vs. M2: XGBoost GPU)**:  
+   - Random Forest (M1) captures the top individual single-run scores (`P13_C1`, `P37_C2`, `P61_C3`). However, XGBoost GPU (M2) achieves superior operational throughput with a **$1.56\times$ inference acceleration** enabled by CUDA hardware acceleration.
 
 ---
 
-## 1. Tabel Komparasi Tri-Paradigma Data Cleaning (C1 vs C2 vs C3)
+## 1. Tri-Paradigm Data Cleaning Benchmark Table (C1 vs. C2 vs. C3)
 
-Tabel berikut membandingkan karakteristik dataset dan kinerja pipeline terbaik dari masing-masing paradigma:
-
-| Dimensi Evaluasi | C1: Row-Level Drop (Exp 1) | C2: Project-Level Drop (Exp 1) | C3: Group-Aware Imputation (Exp 2) |
+| Evaluation Dimension | C1: Row-Level Discarding | C2: Project-Level Discarding | C3: Group-Aware Median Imputation |
 |---|:---:|:---:|:---:|
-| **Strategi Missing Values** | Hapus 273 baris NaN | Hapus 5 proyek ber-NaN | Group-Aware Median Imputation |
-| **Jumlah Proyek Tersisa** | 24 Proyek | 19 Proyek (-20,8%) | **24 Proyek (100% Utuh)** |
-| **Total Test Cases** | 21.963 baris | 16.458 baris (-24,8%) | **22.236 baris (100% Utuh)** |
-| **Populasi Flaky Test** | 808 flaky | 586 flaky (-27,4%) | **811 flaky (100% Utuh)** |
-| **Status Proyek `spring-boot`**| Dipertahankan (160 flaky) | **DIBUANG TOTAL (0 flaky)** | **Dipertahankan (163 flaky)** |
-| **Best Pipeline ID** | `P13_C1_S2_B3_M1` | `P37_C2_S2_B3_M1`* | `P61_C3_S2_B3_M1` |
-| **Mean F1-Score (Top)** | 0.1631 | 0.2271* | **0.1816** |
-| **Mean Recall (Top)** | 0.4110 | 0.5216* | **0.4374** |
-| **Mean Precision (Top)** | 0.1588 | 0.2030* | **0.2038** |
-| **Mean PR-AUC (Top)** | 0.2057 | 0.2472* | **0.2210** |
-| **Mean MCC (Top)** | 0.1341 | 0.2116* | **0.1547** |
-| **Total Flaky Tertangkap** | 428 TP | 338 TP | **465 TP (+8,6%)** |
-| **Recall pada `spring-boot`** | 68,75% (110/160 TP) | 0% (Data Dibuang) | **77,91% (127/163 TP)** |
+| **Missing Value Treatment** | Discard 273 rows containing NaN | Discard 5 projects containing NaN | Group-Aware Per-Project Median Imputation |
+| **Retained Projects** | 24 Projects | 19 Projects ($-20.8\%$) | **24 Projects (100% Retained)** |
+| **Total Test Cases** | 21,963 instances | 16,458 instances ($-24.8\%$) | **22,236 instances (100% Retained)** |
+| **Flaky Test Population** | 808 flaky tests | 586 flaky tests ($-27.4\%$) | **811 flaky tests (100% Retained)** |
+| **Status of `spring-boot`** | Retained (160 flaky) | **COMPLETELY DISCARDED (0 flaky)** | **Retained (163 flaky)** |
+| **Best Performing Pipeline** | `P13_C1_S2_B3_M1` | `P37_C2_S2_B3_M1`* | `P61_C3_S2_B3_M1` |
+| **Mean F1-Score** | 0.1631 | 0.2271* | **0.1816 (+11.39% vs. C1)** |
+| **Mean Recall** | 0.4110 | 0.5216* | **0.4374 (+6.42% vs. C1)** |
+| **Mean Precision** | 0.1588 | 0.2030* | **0.2038 (+28.31% vs. C1)** |
+| **Mean PR-AUC** | 0.2057 | 0.2472* | **0.2210 (+7.44% vs. C1)** |
+| **Mean MCC** | 0.1341 | 0.2116* | **0.1547 (+15.36% vs. C1)** |
+| **Total Captured Flaky (TP)** | 428 TP | 338 TP | **465 TP (+8.64% vs. C1)** |
+| **Recall on `spring-boot`** | 68.75% (110 / 160 TP) | 0.00% (Excluded from Benchmark) | **77.91% (127 / 163 TP)** |
 
-*\*Catatan: Nilai C2 tinggi karena proyek tersulit (`spring-boot`) dibuang dari evaluasi.*
+*\*Note: High metric values for C2 stem from survivorship bias due to discarding the most complex enterprise benchmark (`spring-boot`).*
 
 ---
 
-## 2. Peringkat 10 Pipeline Terbaik Eksperimen Gabungan (Berdasarkan Mean F1)
+## 2. Top-10 Ranked Pipelines Across the Full Factorial Matrix (Ranked by Mean F1)
 
-| Rank | Pipeline ID | Cleaning | Scaling | Imbalance | Model | Mean F1 | Mean Recall | Mean Precision | Mean PR-AUC |
+| Rank | Pipeline ID | Cleaning | Scaling | Imbalance | Classifier | Mean F1 | Mean Recall | Mean Precision | Mean PR-AUC |
 |:---:|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | 🥇 **1** | `P37_C2_S2_B3_M1`* | C2 | S2 (MinMax) | **B3 (RUS)** | M1 (RF) | **0.2271** | 0.5216 | 0.2030 | 0.2472 |
 | 🥈 **2** | `P38_C2_S2_B3_M2`* | C2 | S2 (MinMax) | **B3 (RUS)** | M2 (XGB)| **0.2268** | **0.5664** | 0.1918 | 0.2249 |
@@ -66,21 +68,22 @@ Tabel berikut membandingkan karakteristik dataset dan kinerja pipeline terbaik d
 
 ---
 
-## 3. Analisis Stabilitas & Konsistensi Lintas 10 Repetisi Seeds
+## 3. Stochastic Stability & Consistency Analysis Across 10 Independent Seeds
 
-Menggunakan protokol repeated evaluation pada 10 random seeds (`DEFAULT_SEEDS_10`), didapatkan temuan konsistensi berikut:
-1. **Stabilitas Pipeline Papan Atas**:  
-   Pipeline `P61_C3_S2_B3_M1` (MinMaxScaler + RUS + RF pada dataset terimputasi) membuktikan stabilitas yang sangat tinggi dengan **Coefficient of Variation $CV < 6\%$** ($Mean\ F1 = 0.1798 \pm 0.0104$, $CI_{95} = [0.1733, 0.1863]$).
-2. **Kestabilan Random Forest vs XGBoost**:  
-   Random Forest (M1) menunjukkan variansi antar-seed yang lebih rendah ($CV_{\text{RF}} = 5,78\%$) dibandingkan XGBoost ($CV_{\text{XGB}} = 6,85\%$), membuktikan bahwa mekanisme ensemble bagging dengan 100 pohon secara efektif meredam fluktuasi acak yang dihasilkan oleh *under-sampling* (RUS).
-3. **Deterministik vs Stokastik**:  
-   Konfigurasi tanpa resampling acak (`B1` Baseline dan `B4` ClassWeight pada XGBoost) menghasilkan $CV = 0,00\%$, membuktikan bahwa variansi hasil evaluasi murni bersumber dari langkah sampling data latih, bukan dari ketidakstabilan numerik komputasi.
+Applying the 10-seed repeated evaluation protocol (`DEFAULT_SEEDS_10 = [42, 100, 2024, 777, 999, 123, 456, 789, 2025, 2026]`), the empirical consistency findings are summarized below:
+
+1. **Top-Tier Pipeline Stability**:  
+   Pipeline `P61_C3_S2_B3_M1` (MinMaxScaler + Random Under-Sampling + Random Forest on the group-aware imputed dataset) demonstrates high empirical stability with a **Coefficient of Variation $CV < 6\%$** ($\text{Mean F1} = 0.1798 \pm 0.0104$, $95\%\text{ CI} = [0.1733, 0.1863]$).
+2. **Variance Dampening: Random Forest vs. XGBoost**:  
+   Random Forest (M1) exhibits systematically lower inter-seed variance ($CV_{\text{RF}} = 5.78\%$) compared to XGBoost ($CV_{\text{XGB}} = 6.85\%$), showing that ensemble bagging across 100 decorrelated trees dampens stochastic fluctuations introduced by under-sampling.
+3. **Deterministic vs. Stochastic Resampling**:  
+   Resampling-free configurations (`B1` Baseline and `B4` ClassWeight on deterministic settings) yield $CV = 0.00\%$, verifying that empirical performance variation originates strictly from training set subsampling rather than computational floating-point instability.
 
 ---
 
-## 4. Kesimpulan & Rekomendasi Utama
+## 4. Academic Implications & Production Recommendations
 
-1. **Rekomendasi Pemrosesan Data**:  
-   Tinggalkan metode pembuangan data (C1 dan C2). Gunakan **Group-Aware Per-Project Median Imputation (C3)** karena mempertahankan 100% data enterprise dan meningkatkan F1 sebesar +11,4% serta Precision sebesar +28,3%.
-2. **Rekomendasi Pipeline Produksi (Golden Pipeline)**:  
-   **`P61_C3_S2_B3_M1`** (**Dataset Terimputasi Cerdas + MinMaxScaler + Random Under-Sampling + Random Forest**). Konfigurasi ini memberikan kombinasi tertinggi antara akurasi operasional (F1 0.1816, Recall 43,74%, Precision 20,38%), tangkapan total flaky tertinggi (465 TP), dan kestabilan stokastik terkuat ($CV < 6\%$).
+1. **Data Preprocessing Recommendation**:  
+   Discontinue data discarding strategies (C1 row deletion and C2 project deletion). Adopt **Group-Aware Per-Project Median Imputation (C3)**, which preserves 100% of enterprise benchmark data while providing a $+11.39\%$ improvement in F1-score and $+28.31\%$ in Precision.
+2. **Recommended Production Configuration (Golden Pipeline)**:  
+   **`P61_C3_S2_B3_M1`** (**Group-Aware Imputed Dataset + MinMaxScaler + Random Under-Sampling + Random Forest**). This configuration yields the premier operational balance between test flakiness detection (F1 $0.1816$, Recall $43.74\%$, Precision $20.38\%$), maximum absolute true positive coverage ($465\text{ TP}$), and high stochastic stability ($CV < 6\%$).

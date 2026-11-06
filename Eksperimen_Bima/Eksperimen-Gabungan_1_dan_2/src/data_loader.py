@@ -1,9 +1,9 @@
 """
-Modul Ingestion & Preprocessing Data Terpadu untuk Eksperimen Gabungan 1 & 2.
-Mendukung tiga (3) strategi data cleaning/preprocessing:
-- C1: Row-Level Drop (membuang baris NaN, mempertahankan 24 proyek, 21.963 baris)
-- C2: Project-Level Drop (membuang 5 proyek ber-NaN, mempertahankan 19 proyek, 16.458 baris)
-- C3: Group-Aware Median Imputation (imputasi cerdas, mempertahankan 24 proyek, 22.236 baris utuh)
+Unified Data Ingestion & Preprocessing Module for Combined Experiment 1 & 2.
+Supports three (3) data cleaning / preprocessing strategies:
+- C1: Row-Level Discarding (omits NaN rows, preserves 24 projects, 21,963 instances)
+- C2: Project-Level Discarding (omits 5 NaN projects, preserves 19 projects, 16,458 instances)
+- C3: Group-Aware Median Imputation (contextual imputation, preserves 24 projects, 22,236 instances intact)
 """
 
 from pathlib import Path
@@ -11,7 +11,7 @@ from typing import List, Tuple, Optional
 import pandas as pd
 import numpy as np
 
-# Daftar 23 Fitur Prediktif Resmi FlakeFlagger
+# Canonical 23 FlakeFlagger Predictive Features
 TEST_SMELLS_FEATURES: List[str] = [
     "assertion-roulette",
     "conditional-test-logic",
@@ -58,7 +58,7 @@ PROJECTS_WITH_MISSING_VALUES: List[str] = [
 
 
 def resolve_file(filename: str, custom_dir: Optional[str] = None) -> Path:
-    """Mencari lokasi berkas data secara otomatis."""
+    """Locates data files across standard directory candidate paths."""
     if custom_dir and (Path(custom_dir) / filename).exists():
         return (Path(custom_dir) / filename).resolve()
 
@@ -73,7 +73,7 @@ def resolve_file(filename: str, custom_dir: Optional[str] = None) -> Path:
         if c.exists():
             return c.resolve()
 
-    raise FileNotFoundError(f"Berkas '{filename}' tidak ditemukan di jalur data mana pun.")
+    raise FileNotFoundError(f"Data file '{filename}' was not found in any candidate path.")
 
 
 def load_dataset(
@@ -81,15 +81,15 @@ def load_dataset(
     data_dir: Optional[str] = None
 ) -> Tuple[pd.DataFrame, List[str], List[str]]:
     """
-    Memuat dataset sesuai strategi penanganan data:
-    - C1: Row-Level Drop (dari test_features.csv)
-    - C2: Project-Level Drop (dari test_features.csv)
-    - C3: Group-Aware Median Imputation (dari cleaned_test_features.csv)
+    Loads dataset adhering to the designated data cleaning paradigm:
+    - C1: Row-Level Discarding (from test_features.csv)
+    - C2: Project-Level Discarding (from test_features.csv)
+    - C3: Group-Aware Median Imputation (from cleaned_test_features.csv)
 
     Returns:
-        df: DataFrame yang telah dibersihkan
-        features: List nama fitur prediktif (23 fitur)
-        projects: List nama proyek unik
+        df: Preprocessed pandas DataFrame
+        features: List of 23 predictive feature names
+        projects: Sorted list of unique target project names
     """
     strat = cleaning_strategy.upper()
 
@@ -98,21 +98,21 @@ def load_dataset(
         df = pd.read_csv(file_path)
         if "Unnamed: 0" in df.columns:
             df = df.drop(columns=["Unnamed: 0"])
-        # C1: Drop rows with NaN
+        # C1: Drop rows with NaN in predictive features
         df = df.dropna(subset=ALL_PREDICTIVE_FEATURES).copy()
         projects = sorted(df["project"].unique().tolist())
-        print(f"[DATA LOADER C1] Row-Level Drop: {len(df):,} baris | {len(projects)} proyek | Flaky: {df['flaky'].sum():,}")
+        print(f"[DATA LOADER C1] Row-Level Discarding: {len(df):,} rows | {len(projects)} projects | Flaky: {df['flaky'].sum():,}")
 
     elif strat == "C2":
         file_path = resolve_file("test_features.csv", data_dir)
         df = pd.read_csv(file_path)
         if "Unnamed: 0" in df.columns:
             df = df.drop(columns=["Unnamed: 0"])
-        # C2: Drop entire projects with missing values
+        # C2: Drop entire projects containing missing values
         df = df[~df["project"].isin(PROJECTS_WITH_MISSING_VALUES)].copy()
         df = df.dropna(subset=ALL_PREDICTIVE_FEATURES).copy()
         projects = sorted(df["project"].unique().tolist())
-        print(f"[DATA LOADER C2] Project-Level Drop: {len(df):,} baris | {len(projects)} proyek | Flaky: {df['flaky'].sum():,}")
+        print(f"[DATA LOADER C2] Project-Level Discarding: {len(df):,} rows | {len(projects)} projects | Flaky: {df['flaky'].sum():,}")
 
     elif strat == "C3":
         file_path = resolve_file("cleaned_test_features.csv", data_dir)
@@ -120,14 +120,14 @@ def load_dataset(
         if "Unnamed: 0" in df.columns:
             df = df.drop(columns=["Unnamed: 0"])
         projects = sorted(df["project"].unique().tolist())
-        print(f"[DATA LOADER C3] Group-Aware Median Imputation: {len(df):,} baris | {len(projects)} proyek (100% Utuh) | Flaky: {df['flaky'].sum():,}")
+        print(f"[DATA LOADER C3] Group-Aware Median Imputation: {len(df):,} rows | {len(projects)} projects (100% Intact) | Flaky: {df['flaky'].sum():,}")
 
     else:
-        raise ValueError(f"Cleaning strategy '{cleaning_strategy}' tidak dikenali. Pilih C1, C2, atau C3.")
+        raise ValueError(f"Cleaning strategy '{cleaning_strategy}' is unrecognized. Select C1, C2, or C3.")
 
-    # Validasi bahwa tidak ada NaN pada fitur
+    # Validate that no unhandled NaNs remain in predictive features
     null_count = df[ALL_PREDICTIVE_FEATURES].isnull().sum().sum()
     if null_count > 0:
-        raise ValueError(f"Terdeteksi {null_count} nilai NaN yang tidak terselesaikan pada strategi {strat}!")
+        raise ValueError(f"Detected {null_count} unresolved NaN values under cleaning strategy {strat}!")
 
     return df, ALL_PREDICTIVE_FEATURES, projects

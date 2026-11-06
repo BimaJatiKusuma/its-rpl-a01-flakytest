@@ -1,12 +1,12 @@
 """
-Modul pembangun pipeline (Scaler, Imbalance Sampler, dan Classifier) untuk Eksperimen Gabungan 1 & 2.
-Mendukung:
-- Data Cleaning: C1 (Row Drop), C2 (Project Drop), C3 (Group-Aware Median Imputation)
+Pipeline Builder Module (Feature Scaler, Imbalance Sampler, and Classifier) for Combined Experiment 1 & 2.
+Supports:
+- Data Cleaning: C1 (Row Discarding), C2 (Project Discarding), C3 (Group-Aware Median Imputation)
 - Feature Scaler: StandardScaler (S1), MinMaxScaler (S2), RobustScaler (S3)
-- Imbalance Resampling: None (B1), SMOTE (B2), RUS (B3), ClassWeight (B4)
-- Classifiers: Random Forest (M1), XGBoost GPU (M2)
+- Imbalance Resampling: None/Baseline (B1), SMOTE (B2), RUS (B3), ClassWeight (B4)
+- Classifiers: Random Forest CPU (M1), XGBoost GPU (M2)
 
-Total Pipelines: 3 x 3 x 4 x 2 = 72 Pipelines.
+Total Full Factorial Combinations: 3 x 3 x 4 x 2 = 72 Machine Learning Pipelines.
 """
 
 from typing import Any, Tuple, Optional, List, Dict
@@ -14,7 +14,7 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 from sklearn.ensemble import RandomForestClassifier
 
-# Import imblearn
+# Safe import for imblearn
 try:
     from imblearn.over_sampling import SMOTE
     from imblearn.under_sampling import RandomUnderSampler
@@ -22,7 +22,7 @@ except ImportError:
     SMOTE = None
     RandomUnderSampler = None
 
-# Import xgboost
+# Safe import for xgboost
 try:
     import xgboost as xgb
     from xgboost import XGBClassifier
@@ -32,7 +32,7 @@ except ImportError:
 
 
 def get_scaler(scaling_type: str):
-    """Mengembalikan objek scaler scikit-learn."""
+    """Instantiates and returns the configured scikit-learn feature scaler object."""
     st = scaling_type.upper()
     if st == "S1" or "STANDARD" in st:
         return StandardScaler()
@@ -41,7 +41,7 @@ def get_scaler(scaling_type: str):
     elif st == "S3" or "ROBUST" in st:
         return RobustScaler()
     else:
-        raise ValueError(f"Scaling type '{scaling_type}' tidak dikenali. Pilih S1, S2, atau S3.")
+        raise ValueError(f"Scaling type '{scaling_type}' is unrecognized. Select S1, S2, or S3.")
 
 
 def apply_resampling(
@@ -51,7 +51,7 @@ def apply_resampling(
     random_state: int = 42
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Menerapkan teknik penanganan ketimpangan kelas HANYA pada data latih (Zero Data Leakage).
+    Applies class imbalance resampling EXCLUSIVELY to training folds (Guarantees Zero Data Leakage).
     """
     it = imbalance_type.upper()
     if it == "B1" or "NONE" in it or "BASELINE" in it:
@@ -59,7 +59,7 @@ def apply_resampling(
 
     elif it == "B2" or "SMOTE" in it:
         if SMOTE is None:
-            raise ImportError("Pustaka imbalanced-learn belum terpasang untuk SMOTE.")
+            raise ImportError("Package 'imbalanced-learn' is required for SMOTE oversampling.")
         min_samples = np.sum(y_train == 1)
         if min_samples <= 5:
             k = max(1, min_samples - 1)
@@ -71,17 +71,17 @@ def apply_resampling(
 
     elif it == "B3" or "RUS" in it or "UNDER" in it:
         if RandomUnderSampler is None:
-            raise ImportError("Pustaka imbalanced-learn belum terpasang untuk RandomUnderSampler.")
+            raise ImportError("Package 'imbalanced-learn' is required for RandomUnderSampler.")
         sampler = RandomUnderSampler(random_state=random_state)
         X_res, y_res = sampler.fit_resample(X_train, y_train)
         return X_res, y_res
 
     elif it == "B4" or "WEIGHT" in it or "COST" in it:
-        # B4 ditangani pada bobot loss function model classifier
+        # B4 is handled via loss function sample weighting in the classifier model
         return X_train, y_train
 
     else:
-        raise ValueError(f"Imbalance type '{imbalance_type}' tidak dikenali. Pilih B1, B2, B3, atau B4.")
+        raise ValueError(f"Imbalance type '{imbalance_type}' is unrecognized. Select B1, B2, B3, or B4.")
 
 
 def build_classifier(
@@ -92,7 +92,7 @@ def build_classifier(
     random_state: int = 42
 ) -> Any:
     """
-    Membangun model classifier (Random Forest atau XGBoost GPU) sesuai konfigurasi.
+    Constructs the classifier model (Random Forest or GPU-accelerated XGBoost) based on specifications.
     """
     mt = model_type.upper()
     it = imbalance_type.upper()
@@ -109,7 +109,7 @@ def build_classifier(
 
     elif mt == "M2" or "XGB" in mt or "XGBOOST" in mt:
         if XGBClassifier is None:
-            raise ImportError("Pustaka xgboost belum terpasang.")
+            raise ImportError("Package 'xgboost' is required.")
 
         weight = scale_pos_weight_val if is_cost_sensitive else 1.0
         device = "cuda" if use_gpu else "cpu"
@@ -127,7 +127,7 @@ def build_classifier(
             )
             return model
         except Exception:
-            # Fallback ke CPU jika CUDA device belum siap di runtime
+            # Fallback to CPU tree_method='hist' if CUDA device is uninitialized at runtime
             return XGBClassifier(
                 n_estimators=100,
                 max_depth=6,
@@ -139,12 +139,12 @@ def build_classifier(
                 n_jobs=-1
             )
     else:
-        raise ValueError(f"Model type '{model_type}' tidak dikenali. Pilih M1 atau M2.")
+        raise ValueError(f"Model type '{model_type}' is unrecognized. Select M1 or M2.")
 
 
 def get_pipeline_specs() -> List[Dict[str, Any]]:
     """
-    Menghasilkan definisi seluruh 72 kombinasi pipeline faktorial:
+    Generates definitions for all 72 full factorial pipeline combinations:
     3 Cleaning (C1, C2, C3) x 3 Scaling (S1, S2, S3) x 4 Imbalance (B1, B2, B3, B4) x 2 Models (M1, M2) = 72 Pipelines.
     """
     cleanings = ["C1", "C2", "C3"]
